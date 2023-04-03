@@ -1,9 +1,11 @@
-let app, supertest, api, orm, helper, userController
+const bcrypt = require('bcrypt')
+
+let app, supertest, api, orm, helper, User
 
 beforeAll(async () => {
-    app = require('../app')
+    app = await require('../app')
     supertest = require('supertest')
-    api = supertest(app)
+    api = await supertest(app)
 
     orm = require('../utils/model')
 
@@ -12,17 +14,25 @@ beforeAll(async () => {
     helper = require('./helper')
     await helper.setUsersTable()
 
-    userController = require('../controllers/users')
+    User = orm.model('User')
 })
 
 describe('when there is initially two users in the database', () => {
     beforeEach(async () => {
         await orm.getSequelize().authenticate()
 
-        await userController.truncate()
+        await User.destroy({
+            truncate: true
+        })
 
-        await userController.create({ username: 'jane', password: 'password' })
-        await userController.create({ username: 'austin', password: 'password' })
+        await User.create({
+            username: 'james',
+            passwordHash: await bcrypt.hash('password', 10)
+        })
+        await User.create({
+            username: 'austin',
+            passwordHash: await bcrypt.hash('password', 10)
+        })
     })
 
     describe('creation of a new user', () => {
@@ -34,13 +44,67 @@ describe('when there is initially two users in the database', () => {
                 password: 'password'
             }
 
-            const newUser = await userController.create(newUserData)
+            const response = await api
+                .post('/users')
+                .send(newUserData)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+
+            const newUser = response.body
 
             const usersAtEnd = await helper.usersInDb()
             const usernames = usersAtEnd.map(user => user.username)
 
             expect(usernames).toContain(newUser.username)
             expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+        })
+
+        test('fails with missing data', async () => {
+            const usersAtStart = await helper.usersInDb()
+
+            await api
+                .post('/users')
+                .send({})
+                .expect(400)
+
+            const usersAtEnd = await helper.usersInDb()
+            expect(usersAtStart).toEqual(usersAtEnd)
+        })
+
+        test('fails with missing password', async () => {
+            const usersAtStart = await helper.usersInDb()
+
+            const newUserData = {
+                username: 'latar',
+            }
+
+            await api
+                .post('/users')
+                .send(newUserData)
+                .expect(400)
+
+            const usersAtEnd = await helper.usersInDb()
+
+            expect(usersAtStart).toEqual(usersAtEnd)
+        })
+
+        test('fails if username already exists', async () => {
+            const usersAtStart = await helper.usersInDb()
+
+            const newUserData = {
+                username: 'james',
+                password: 'password'
+            }
+
+            const response = await api
+                .post('/users')
+                .send(newUserData)
+                .expect(400)
+
+            const error = response.body.error
+            const usersAtEnd = await helper.usersInDb()
+
+            expect(usersAtStart).toEqual(usersAtEnd)
         })
     })
 })

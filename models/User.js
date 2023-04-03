@@ -5,18 +5,19 @@ module.exports = {
         id: {
             type: Seq.INTEGER,
             autoIncrement: true,
-            primaryKey: true
+            primaryKey: true,
         },
         username: {
             type: Seq.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true,
+            validate: {
+                len: [5,16]
+            }
         },
         passwordHash: {
             type: Seq.STRING,
-            set(valor) {
-                this.setDataValue('passwordHash', valor)
-            },
             allowNull: false
         }
-    }
+    },
 }

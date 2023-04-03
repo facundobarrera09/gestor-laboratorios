@@ -1,21 +1,32 @@
 const bcrypt = require('bcrypt')
 
+const usersRouter = require('express').Router()
+
 const orm = require('../utils/model')
 const User = orm.model('User')
 
-const truncate = async () => {
-    await User.destroy({
-        truncate: true
-    })
+const stripTimestamps = (user) => {
+    return user = {
+        id: user.id,
+        username: user.username,
+        passwordHash: user.passwordHash
+    }
 }
 
-const create = async ({ username, password }) => {
+usersRouter.post('/', async (request, response) => {
+    let { username, password } = request.body
+
     const passwordHash = await bcrypt.hash(password, 10)
-    const newUser = await User.create({ username, passwordHash })
-    return newUser
-}
 
-module.exports = {
-    truncate,
-    create
-}
+    const newUserData = {
+        username,
+        passwordHash
+    }
+
+    let savedUser = await User.create(newUserData)
+    savedUser = stripTimestamps(savedUser)
+
+    response.status(201).json(savedUser)
+})
+
+module.exports = usersRouter
