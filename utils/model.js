@@ -1,3 +1,5 @@
+const logger = require('./logger')
+
 var filesystem = require('fs')
 var models = {}
 var relationships = {}
@@ -20,7 +22,11 @@ var singleton = function singleton(){
             sequelize = new Sequelize(database, username, password, obj)
         }
 
-        init()
+        sequelize.authenticate()
+            .then(() => {
+                logger.info('Connected to database')
+                init()
+            })
     }
 
     this.model = function (name){
@@ -41,12 +47,10 @@ var singleton = function singleton(){
                 relationships[modelName] = object.relations
             }
         })
-        console.log('Models:', models)
         for(var name in relationships){
             var relation = relationships[name]
             for(var relName in relation){
                 var related = relation[relName]
-                console.log(related)
                 models[name][relName](models[related])
             }
         }

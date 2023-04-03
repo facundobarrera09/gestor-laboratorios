@@ -11,8 +11,11 @@ module.exports = {
             type: Seq.STRING,
             allowNull: false
         },
-        password: {
+        passwordHash: {
             type: Seq.STRING,
+            set(valor) {
+                this.setDataValue('passwordHash', valor)
+            },
             allowNull: false
         }
     }
