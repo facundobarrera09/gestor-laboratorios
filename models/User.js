@@ -1,22 +1,19 @@
-const { Sequelize, DataTypes } = require('sequelize')
-const sequelize = new Sequelize
+const orm = require('../utils/model'), Seq = orm.Seq()
 
-const User = sequelize.define('User', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
+module.exports = {
+    model: {
+        id: {
+            type: Seq.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        username: {
+            type: Seq.STRING,
+            allowNull: false
+        },
+        password: {
+            type: Seq.STRING,
+            allowNull: false
+        }
     }
-}, {
-    freezeTableName: true
-})
-
-module.exports = User
+}
