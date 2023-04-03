@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-m-6 col-lg-6 col-xl-6">
+                <h1 class="text-center p-4">Registrar Turno</h1>
+                <select class="form-select" aria-label="Default select example">
+                    <option selected>Seleccionar el usuario que accederá</option>
+                    <option value="1">Cristian</option>
+                    <option value="2">Lkng</option>
+                    <option value="3">Fakbar</option>
+                </select>
+                <h2 class="text-center p-4">Seleccionar Laboratorio</h2>
+                  <div class="p-2"></div>
+                    <div class="d-flex justify-content-center">
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+                            <button type="button" class="btn btn-outline-primary">Laboratorio 1<br> Descripcion</button>
+                            <button type="button" class="btn btn-outline-primary">Laboratorio 2<br> Descripcion</button>
+                            <button type="button" class="btn btn-outline-primary">Laboratorio 3<br> Descripcion</button>
+                        </div>
+                    </div>
+                    <h2 class="text-center p-4">Seleccionar fecha y hora</h2>
+                    <div class="p-2"></div>
+                    <div class="d-flex justify-content-center">
+                        <input class="p-2 m-2" type="date">
+                        <input class="m-2" type="time">
+                    </div>
+                    <div class="p-2"></div>
+                    <div class="d-flex p-2 justify-content-center">
+                        <button type="button" class="btn btn-danger btn-lg">Cancelar</button>
+                        <button type="button" class="btn btn-primary btn-lg">Confirmar</button>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
