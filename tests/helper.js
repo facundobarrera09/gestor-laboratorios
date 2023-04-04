@@ -1,5 +1,6 @@
 const orm = require('../utils/model')
 const User = orm.model('User')
+const Turn = orm.model('Turn')
 
 const setUsersTable = async () => {
     await orm.getSequelize().sync({ force: true })
@@ -10,6 +11,11 @@ const usersInDb = async () => {
     return allUsers
 }
 
+const turnsInDb = async () => {
+    const allTurns = await Turn.findAll()
+    return allTurns
+}
+
 module.exports = {
-    setUsersTable, usersInDb
+    setUsersTable, usersInDb, turnsInDb
 }
