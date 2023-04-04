@@ -9,10 +9,13 @@ const DATABASE = (process.env.NODE_ENV === 'test') ? process.env.TEST_DATABASE :
 const DB_USER = process.env.DB_USER
 const DB_PASSWORD = process.env.DB_PASSWORD
 
+const SECRET = process.env.SECRET
+
 module.exports = {
     PORT,
     MYSQL_HOST,
     DATABASE,
     DB_USER,
     DB_PASSWORD,
+    SECRET
 }

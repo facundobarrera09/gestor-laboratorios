@@ -16,7 +16,8 @@ const errorHandler = (error, request, response, next) => {
     logger.error(error.message)
 
     // handle errors
-    // console.log(error.name, ':', error.message)
+    // console.log(error)
+    console.log(error.name, ':', error.message)
     if (error.name === 'SequelizeValidationError') {
         response.status(400).send({ error: 'username must be between 5 and 16 characters long' })
     }

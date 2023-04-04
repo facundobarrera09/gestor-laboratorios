@@ -18,6 +18,7 @@ module.exports = sequelize.authenticate()
     .then(async () => {
         await sequelize.sync({ force: true })
 
+        const loginRouter = require('./controllers/login')
         const usersRouter = require('./controllers/users')
 
         app = express()
@@ -29,7 +30,7 @@ module.exports = sequelize.authenticate()
         app.use(express.json())
         app.use(middleware.requestLogger)
 
-
+        app.use('/login', loginRouter)
         app.use('/users', usersRouter)
 
         app.use(middleware.unknownEndpoint)
