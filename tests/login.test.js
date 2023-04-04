@@ -7,16 +7,13 @@ let app, supertest, api, orm, helper, User
 beforeAll(async () => {
     app = await require('../app')
     supertest = require('supertest')
-    api = await supertest(app)
+    api = supertest(app)
 
     orm = require('../utils/model')
-
-    await orm.getSequelize().authenticate()
+    User = orm.model('User')
 
     helper = require('./helper')
     await helper.setUsersTable()
-
-    User = orm.model('User')
 
     await User.create({
         username: 'james',

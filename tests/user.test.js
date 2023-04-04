@@ -104,6 +104,7 @@ describe('when there is initially two users in the database', () => {
             const error = response.body.error
             const usersAtEnd = await helper.usersInDb()
 
+            expect(error).toEqual('username already in use')
             expect(usersAtStart).toEqual(usersAtEnd)
         })
     })

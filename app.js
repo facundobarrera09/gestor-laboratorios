@@ -23,7 +23,7 @@ module.exports = sequelize.authenticate()
 
         app = express()
 
-        const logger = require('./utils/logger')
+        // const logger = require('./utils/logger')
         const middleware = require('./utils/middleware')
 
         app.use(express.static('build'))
