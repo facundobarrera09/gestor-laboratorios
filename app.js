@@ -16,16 +16,19 @@ const sequelize = orm.getSequelize()
 
 module.exports = sequelize.authenticate()
     .then(async () => {
-        await sequelize.sync({ force: true })
-
         const loginRouter = require('./controllers/login')
         const usersRouter = require('./controllers/users')
         const turnsRouter = require('./controllers/turns')
 
         app = express()
 
-        // const logger = require('./utils/logger')
+        const logger = require('./utils/logger')
         const middleware = require('./utils/middleware')
+
+        if (config.NODE_ENV === 'development') {
+            logger.info('Resetting database')
+            await sequelize.sync({ force: true })
+        }
 
         app.use(express.static('build'))
         app.use(express.json())

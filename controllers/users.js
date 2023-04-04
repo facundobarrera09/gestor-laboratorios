@@ -14,13 +14,14 @@ const stripTimestamps = (user) => {
 }
 
 usersRouter.post('/', async (request, response) => {
-    let { username, password } = request.body
+    let { username, password, role } = request.body
 
     const passwordHash = await bcrypt.hash(password, 10)
 
     const newUserData = {
         username,
-        passwordHash
+        passwordHash,
+        role
     }
 
     let savedUser = await User.create(newUserData)

@@ -8,30 +8,25 @@ beforeAll(async () => {
     api = await supertest(app)
 
     orm = require('../utils/model')
-
-    await orm.getSequelize().authenticate()
+    User = orm.model('User')
 
     helper = require('./helper')
-    await helper.setUsersTable()
-
-    User = orm.model('User')
+    await helper.syncDatabase()
 })
 
 describe('when there is initially two users in the database', () => {
     beforeEach(async () => {
-        await orm.getSequelize().authenticate()
-
-        await User.destroy({
-            truncate: true
-        })
+        helper.truncateTables()
 
         await User.create({
             username: 'james',
-            passwordHash: await bcrypt.hash('password', 10)
+            passwordHash: await bcrypt.hash('password', 10),
+            role: 'default'
         })
         await User.create({
             username: 'austin',
-            passwordHash: await bcrypt.hash('password', 10)
+            passwordHash: await bcrypt.hash('password', 10),
+            role: 'default'
         })
     })
 
@@ -41,7 +36,8 @@ describe('when there is initially two users in the database', () => {
 
             const newUserData = {
                 username: 'ramiro',
-                password: 'password'
+                password: 'password',
+                role: 'default'
             }
 
             const response = await api
@@ -62,13 +58,16 @@ describe('when there is initially two users in the database', () => {
         test('fails with missing data', async () => {
             const usersAtStart = await helper.usersInDb()
 
-            await api
+            const response = await api
                 .post('/users')
                 .send({})
                 .expect(400)
 
             const usersAtEnd = await helper.usersInDb()
+            const error = response.body.error
+
             expect(usersAtStart).toEqual(usersAtEnd)
+            expect(error).toEqual('username, password, or role missing')
         })
 
         test('fails with missing password', async () => {
@@ -93,7 +92,8 @@ describe('when there is initially two users in the database', () => {
 
             const newUserData = {
                 username: 'james',
-                password: 'password'
+                password: 'password',
+                role: 'default'
             }
 
             const response = await api

@@ -7,12 +7,23 @@ module.exports = {
             autoIncrement: true,
             primaryKey: true,
         },
+        beginsAt: {
+            type: Seq.DATE(6),
+            allowNull: false
+        },
+        endsAt: {
+            type: Seq.DATE(6),
+            allowNull: false
+        },
         accessingUserId: {
-            type: Seq.INTEGER,
+            type: Seq.INTEGER
         },
         creatingUserId: {
             type: Seq.INTEGER
         },
+        laboratoryId: {
+            type: Seq.INTEGER
+        }
     },
     relations: [{
         belongsTo: {
@@ -36,6 +47,16 @@ module.exports = {
                 }
             }
         }
-    }
-    ]
+    }, {
+        belongsTo: {
+            model: 'Laboratory',
+            options: {
+                as: 'laboratory',
+                foreignKey: {
+                    name: 'laboratoryId',
+                    allowNull: false
+                }
+            }
+        }
+    }]
 }

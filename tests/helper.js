@@ -2,8 +2,10 @@ const orm = require('../utils/model')
 const User = orm.model('User')
 const Turn = orm.model('Turn')
 
-const setUsersTable = async () => {
-    await orm.getSequelize().sync({ force: true })
+const sequelize = orm.getSequelize()
+
+const syncDatabase = async () => {
+    await sequelize.sync({ force: true })
 }
 
 const usersInDb = async () => {
@@ -16,6 +18,20 @@ const turnsInDb = async () => {
     return allTurns
 }
 
+const truncateTables = async () => {
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true })
+
+    const models = [ 'User', 'Turn', 'Laboratory']
+    models.forEach(async (modelName) => {
+        orm.model(modelName).destroy({
+            where: {},
+            force: true,
+        })
+    })
+
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true })
+}
+
 module.exports = {
-    setUsersTable, usersInDb, turnsInDb
+    syncDatabase, usersInDb, turnsInDb, truncateTables
 }

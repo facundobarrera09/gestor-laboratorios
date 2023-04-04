@@ -13,15 +13,17 @@ beforeAll(async () => {
     User = orm.model('User')
 
     helper = require('./helper')
-    await helper.setUsersTable()
+    await helper.syncDatabase()
 
     await User.create({
         username: 'james',
-        passwordHash: await bcrypt.hash('password', 10)
+        passwordHash: await bcrypt.hash('password', 10),
+        role: 'default'
     })
     await User.create({
         username: 'austin',
-        passwordHash: await bcrypt.hash('password', 10)
+        passwordHash: await bcrypt.hash('password', 10),
+        role: 'default'
     })
 
 })

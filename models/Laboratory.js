@@ -7,25 +7,35 @@ module.exports = {
             autoIncrement: true,
             primaryKey: true,
         },
-        username: {
+        name: {
             type: Seq.STRING,
             allowNull: false,
             unique: true,
             validate: {
-                len: [5,16]
+                len: [8,50]
             }
         },
-        passwordHash: {
-            type: Seq.STRING,
-            allowNull: false
-        },
-        role: {
+        ip: {
             type: Seq.STRING,
             allowNull: false,
+            unique: true,
+            validate: {
+                isIP: true
+            }
+        },
+        port: {
+            type: Seq.STRING,
+            validate: {
+                isNumeric: true,
+                len: [1,5]
+            }
+        },
+        state: {
+            type: Seq.STRING,
             validate: {
                 isValid(value) {
-                    if (!(value === 'default' || value === 'administrator')) {
-                        throw new Error('invalid user role')
+                    if (!(value === 'active' || value === 'inactive' || value === 'approval_pending')) {
+                        throw new Error('invalid laboratory state')
                     }
                 }
             }
@@ -35,19 +45,9 @@ module.exports = {
         hasMany: {
             model: 'Turn',
             options: {
-                as: 'accessingUser',
+                as: 'laboratory',
                 foreignKey: {
-                    name: 'accessingUserId'
-                }
-            }
-        }
-    },{
-        hasMany: {
-            model: 'Turn',
-            options: {
-                as: 'creatingUser',
-                foreignKey: {
-                    name: 'creatingUserId'
+                    name: 'laboratoryId'
                 }
             }
         }

@@ -19,10 +19,15 @@ const errorHandler = (error, request, response, next) => {
     // console.log(error)
     // console.log(error.name, ':', error.message)
     if (error.name === 'SequelizeValidationError') {
-        response.status(400).send({ error: 'username must be between 5 and 16 characters long' })
+        if (error.message.includes('length')) {
+            response.status(400).send({ error: 'username must be between 5 and 16 characters long' })
+        }
+        else if (error.message.includes('notNull Violation')) {
+            response.status(400).send({ error: 'username, password, or role missing' })
+        }
     }
     else if (error.name === 'Error' && error.message === 'data and salt arguments required') {
-        response.status(400).send({ error: 'password is missing' })
+        response.status(400).send({ error: 'username, password, or role missing' })
     }
     else if (error.name === 'SequelizeUniqueConstraintError') {
         response.status(400).send({ error: 'username already in use' })
