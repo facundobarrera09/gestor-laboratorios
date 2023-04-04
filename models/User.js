@@ -20,4 +20,27 @@ module.exports = {
             allowNull: false
         }
     },
+    relations: [{
+        hasMany: {
+            model: 'Turn',
+            options: {
+                as: 'accessingUser',
+                foreignKey: {
+                    name: 'accessingUserId'
+                }
+            }
+        }
+    },{
+        hasMany: {
+            model: 'Turn',
+            options: {
+                as: 'creatingUser',
+                foreignKey: {
+                    name: 'creatingUserId'
+                }
+            }
+        }
+    }
+
+    ]
 }

@@ -47,12 +47,30 @@ var singleton = function singleton(){
                 relationships[modelName] = object.relations
             }
         })
-        for(var name in relationships){
-            var relation = relationships[name]
-            for(var relName in relation){
-                var related = relation[relName]
-                models[name][relName](models[related])
-            }
+        // relationships: {
+        //     Turn: {
+        //          belongsTo: {
+        //              model: 'User',
+        //              options: {}
+        //          }
+        //     }
+        // }
+
+        // relationships[Turn] = turns relations
+
+        // name = Turn
+        // relation = relations
+        // relName = belongsTo
+
+        for(var modelName in relationships){
+            const relations = relationships[modelName]
+            relations.forEach(relation => {
+                for (const relName in relation) {
+                    const relatedModel = relation[relName].model
+                    const relationOptions = relation[relName].options
+                    models[modelName][relName](models[relatedModel], relationOptions)
+                }
+            })
         }
     }
 
