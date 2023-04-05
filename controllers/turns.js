@@ -4,11 +4,14 @@ const orm = require('../utils/model')
 const Turn = orm.model('Turn')
 
 turnsRouter.post('/', async (request, response, next) => {
-    const { creatingUserId, accessingUserId } = request.body
+    const { beginsAt, endsAt, creatingUserId, accessingUserId, laboratoryId } = request.body
 
     const newTurnData = {
+        beginsAt,
+        endsAt,
         accessingUserId,
-        creatingUserId
+        creatingUserId,
+        laboratoryId
     }
 
     try {

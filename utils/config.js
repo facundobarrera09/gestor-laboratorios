@@ -13,6 +13,8 @@ const DB_PASSWORD = process.env.DB_PASSWORD
 
 const SECRET = process.env.SECRET
 
+const TURN_DURATION = process.env.TURN_DURATION ? process.env.TURN_DURATION : 10
+
 module.exports = {
     NODE_ENV,
     PORT,
@@ -20,5 +22,6 @@ module.exports = {
     DATABASE,
     DB_USER,
     DB_PASSWORD,
-    SECRET
+    SECRET,
+    TURN_DURATION
 }

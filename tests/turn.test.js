@@ -40,8 +40,11 @@ describe('when there are no turns in the database', () => {
             const turnsAtStart = await helper.turnsInDb()
 
             const turn = {
+                beginsAt: '04/03/2023 22:30',
+                endsAt: '04/03/2023 22:40',
                 accessingUserId: 1,
-                creatingUserId: 1
+                creatingUserId: 1,
+                laboratoryId: 1
             }
 
             await api

@@ -13,7 +13,12 @@ module.exports = {
         },
         endsAt: {
             type: Seq.DATE(6),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                lastsDeterminedTime(value) {
+                    console.log(value)
+                }
+            }
         },
         accessingUserId: {
             type: Seq.INTEGER
