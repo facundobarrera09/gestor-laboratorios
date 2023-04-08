@@ -5,7 +5,7 @@ let app, supertest, api, orm, helper, User
 beforeAll(async () => {
     app = await require('../app')
     supertest = require('supertest')
-    api = await supertest(app)
+    api = supertest(app)
 
     orm = require('../utils/model')
     User = orm.model('User')

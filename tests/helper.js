@@ -5,6 +5,7 @@ const Turn = orm.model('Turn')
 const sequelize = orm.getSequelize()
 
 const syncDatabase = async () => {
+    await sequelize.authenticate()
     await sequelize.sync({ force: true })
 }
 

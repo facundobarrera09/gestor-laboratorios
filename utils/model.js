@@ -81,6 +81,10 @@ var singleton = function singleton(){
     this.getSequelize = () => {
         return sequelize
     }
+
+    this.authenticate = () => {
+        return sequelize.authenticate()
+    }
 }
 
 singleton.instance = null

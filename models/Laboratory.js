@@ -15,6 +15,17 @@ module.exports = {
                 len: [8,50]
             }
         },
+        turnDurationMinutes: {
+            type: Seq.INTEGER,
+            allowNull: false,
+            validate: {
+                areAllTurnTheSame(value) {
+                    if (!((24*60) % value === 0)) {
+                        throw new Error(`${value} does not divide the day into equal turns`)
+                    }
+                }
+            }
+        },
         ip: {
             type: Seq.STRING,
             allowNull: false,

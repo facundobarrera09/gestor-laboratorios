@@ -1,4 +1,3 @@
-const config = require('../utils/config')
 const orm = require('../utils/model'), Seq = orm.Seq()
 
 module.exports = {
@@ -8,21 +7,16 @@ module.exports = {
             autoIncrement: true,
             primaryKey: true,
         },
-        beginsAt: {
-            type: Seq.DATE(6),
-            allowNull: false
-        },
-        endsAt: {
+        date: {
             type: Seq.DATE(6),
             allowNull: false,
-            validate: {
-                respectsTurnDuration(value) {
-                    const difference = ((value - this.beginsAt)/(60*1000))
-                    if (!(difference === config.TURN_DURATION)) {
-                        throw new Error(`begin date and end date do not represent stablished turn duration (${config.TURN_DURATION})`)
-                    }
-                }
+            set(value) {
+                this.setDataValue('date', new Date(new Date(value).setHours(0,0,0,0)))
             }
+        },
+        turn: {
+            type: Seq.INTEGER,
+            allowNull: false,
         },
         accessingUserId: {
             type: Seq.INTEGER
