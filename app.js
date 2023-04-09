@@ -19,6 +19,7 @@ module.exports = sequelize.authenticate()
         const loginRouter = require('./controllers/login')
         const usersRouter = require('./controllers/users')
         const turnsRouter = require('./controllers/turns')
+        const labRouter = require('./controllers/laboratories')
 
         app = express()
 
@@ -37,6 +38,7 @@ module.exports = sequelize.authenticate()
         app.use('/login', loginRouter)
         app.use('/users', usersRouter)
         app.use('/turns', turnsRouter)
+        app.use('/laboratories', labRouter)
 
         app.use(middleware.unknownEndpoint)
         app.use(middleware.errorHandler)
