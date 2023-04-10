@@ -15,7 +15,7 @@
 
 > Gestor de laboratorios CIASUR
 
-### 🏠 [Homepage](https://github.com/facundobarrera09/gestor-laboratorios.git)
+### [Homepage](https://github.com/facundobarrera09/gestor-laboratorios.git)
 
 ## Prerequisites
 
@@ -41,6 +41,18 @@ DB_USER=[usuario de base de datos]
 DB_PASSWORD=[constraseña de usuario]
 
 SECRET=[string usada para la creación de tokens]
+```
+
+## Run app (production)
+
+```sh
+npm start
+```
+
+## Run app (development)
+
+```sh
+npm run dev
 ```
 
 ## Run tests
