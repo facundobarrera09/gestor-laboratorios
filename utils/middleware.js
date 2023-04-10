@@ -17,7 +17,7 @@ const errorHandler = (error, request, response, next) => {
 
     // handle errors
     // console.log(error)
-    console.log(error.name, ':', error.message)
+    // console.log(error.name, ':', error.message)
     if (error.name === 'SequelizeValidationError') {
         if (error.message.includes('length')) {
             response.status(400).send({ error: 'username must be between 5 and 16 characters long' })
@@ -26,8 +26,16 @@ const errorHandler = (error, request, response, next) => {
             response.status(400).send({ error: 'username, password, or role missing' })
         }
     }
-    else if (error.name === 'Error' && error.message === 'data and salt arguments required') {
-        response.status(400).send({ error: 'username, password, or role missing' })
+    else if (error.name === 'JsonWebTokenError') {
+        response.status(401).send({ error: 'jwt must be provided' })
+    }
+    else if (error.name === 'Error') {
+        if (error.message === 'data and salt arguments required') {
+            response.status(400).send({ error: 'username, password, or role missing' })
+        }
+        else if (error.message.includes('unauthorized')) {
+            response.status(401).send({ error: 'not authorized to perform that action' })
+        }
     }
     else if (error.name === 'SequelizeUniqueConstraintError') {
         response.status(400).send({ error: 'username already in use' })

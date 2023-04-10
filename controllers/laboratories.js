@@ -1,7 +1,19 @@
 const labRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
+const config = require('../utils/config')
 
 const orm = require('../utils/model')
+const User = orm.model('User')
 const Laboratory = orm.model('Laboratory')
+
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')
+    }
+
+    return null
+}
 
 labRouter.post('/', async (request, response, next) => {
     const { name, turnDurationMinutes, ip, port, status } = request.body
@@ -12,6 +24,16 @@ labRouter.post('/', async (request, response, next) => {
         ip,
         port,
         status
+    }
+
+    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'invalid token' })
+    }
+
+    const user = await User.findOne({ where: { id: decodedToken.id } })
+    if(user.role !== 'administrator') {
+        throw new Error('unauthorized')
     }
 
     try {

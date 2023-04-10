@@ -14,10 +14,15 @@ beforeAll(async () => {
     await helper.syncDatabase()
 })
 
-describe('when there is initially two users in the database', () => {
+describe('when there is initially three users in the database', () => {
     beforeEach(async () => {
-        helper.truncateTables()
+        await helper.truncateTables(['User'])
 
+        await User.create({
+            username: 'facundo',
+            passwordHash: await bcrypt.hash('password', 10),
+            role: 'administrator'
+        })
         await User.create({
             username: 'james',
             passwordHash: await bcrypt.hash('password', 10),
@@ -31,7 +36,7 @@ describe('when there is initially two users in the database', () => {
     })
 
     describe('creation of a new user', () => {
-        test('succeeds with valid data', async () => {
+        test('user succeeds with valid data', async () => {
             const usersAtStart = await helper.usersInDb()
 
             const newUserData = {
@@ -40,9 +45,12 @@ describe('when there is initially two users in the database', () => {
                 role: 'default'
             }
 
+            const user = await helper.loginAs('facundo')
+
             const response = await api
                 .post('/users')
                 .send(newUserData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
 
@@ -55,12 +63,60 @@ describe('when there is initially two users in the database', () => {
             expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
         })
 
+        test('fails if user is not authorized', async () => {
+            const usersAtStart = await helper.usersInDb()
+
+            const user = await helper.loginAs('james')
+
+            const newUserData = {
+                username: 'ramiro',
+                password: 'password',
+                role: 'default'
+            }
+
+            const response = await api
+                .post('/users')
+                .send(newUserData)
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(401)
+
+            const error = response.body.error
+            const usersAtEnd = await helper.usersInDb()
+
+            expect(usersAtStart).toEqual(usersAtEnd)
+            expect(error).toEqual('not authorized to perform that action')
+        })
+
+        test('fails if missing credentials', async () => {
+            const usersAtStart = await helper.usersInDb()
+
+            const newUserData = {
+                username: 'james',
+                password: 'password',
+                role: 'default'
+            }
+
+            const response = await api
+                .post('/users')
+                .send(newUserData)
+                .expect(401)
+
+            const error = response.body.error
+            const usersAtEnd = await helper.usersInDb()
+
+            expect(usersAtStart).toEqual(usersAtEnd)
+            expect(error).toEqual('jwt must be provided')
+        })
+
         test('fails with missing data', async () => {
             const usersAtStart = await helper.usersInDb()
+
+            const user = await helper.loginAs('facundo')
 
             const response = await api
                 .post('/users')
                 .send({})
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const usersAtEnd = await helper.usersInDb()
@@ -77,9 +133,12 @@ describe('when there is initially two users in the database', () => {
                 username: 'latar',
             }
 
+            const user = await helper.loginAs('facundo')
+
             await api
                 .post('/users')
                 .send(newUserData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const usersAtEnd = await helper.usersInDb()
@@ -96,9 +155,12 @@ describe('when there is initially two users in the database', () => {
                 role: 'default'
             }
 
+            const user = await helper.loginAs('facundo')
+
             const response = await api
                 .post('/users')
                 .send(newUserData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const error = response.body.error

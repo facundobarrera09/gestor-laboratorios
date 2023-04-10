@@ -1,4 +1,6 @@
-let app, supertest, api, orm, helper
+const bcrypt = require('bcrypt')
+
+let app, supertest, api, orm, helper, User
 
 beforeAll(async () => {
     app = await require('../app')
@@ -6,14 +8,26 @@ beforeAll(async () => {
     api = supertest(app)
 
     orm = require('../utils/model')
+    User = orm.model('User')
 
     helper = require('./helper')
     await helper.syncDatabase()
+
+    await User.create({
+        username: 'facundo',
+        passwordHash: await bcrypt.hash('password', 10),
+        role: 'administrator'
+    })
+    await User.create({
+        username: 'james',
+        passwordHash: await bcrypt.hash('password', 10),
+        role: 'default'
+    })
 })
 
 describe('when there is initially no laboratories in the database', () => {
-    beforeAll(async () => {
-        await helper.syncDatabase()
+    beforeEach(async () => {
+        await helper.truncateTables(['Laboratory'])
     })
 
     describe('creation of laboratory', () => {
@@ -29,9 +43,12 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
+            const user = await helper.loginAs('facundo')
+
             await api
                 .post('/laboratories')
                 .send(newLabData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
 
             const labsAtEnd = await helper.laboratoriesInDb()
@@ -52,9 +69,12 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
+            const user = await helper.loginAs('facundo')
+
             const response = await api
                 .post('/laboratories')
                 .send(newLabData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const labsAtEnd = await helper.laboratoriesInDb()
@@ -75,9 +95,12 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
+            const user = await helper.loginAs('facundo')
+
             const response = await api
                 .post('/laboratories')
                 .send(newLabData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const labsAtEnd = await helper.laboratoriesInDb()
@@ -98,9 +121,12 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
+            const user = await helper.loginAs('facundo')
+
             const response = await api
                 .post('/laboratories')
                 .send(newLabData)
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const labsAtEnd = await helper.laboratoriesInDb()
@@ -110,12 +136,62 @@ describe('when there is initially no laboratories in the database', () => {
             expect(error).toEqual('port is not valid')
         })
 
+        test('fails if user does not have authorization', async () => {
+            const labsAtStart = await helper.laboratoriesInDb()
+
+            const newLabData = {
+                name: 'Science lab',
+                turnDurationMinutes: 10,
+                ip: '192.168.100.20',
+                port: '1000',
+                state: 'active'
+            }
+
+            const user = await helper.loginAs('james')
+
+            const response = await api
+                .post('/laboratories')
+                .send(newLabData)
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(401)
+
+            const labsAtEnd = await helper.laboratoriesInDb()
+
+            expect(labsAtEnd).toEqual(labsAtStart)
+            expect(response.text).toContain('not authorized to perform that action')
+        })
+
+        test('fails if missing credentials', async () => {
+            const labsAtStart = await helper.laboratoriesInDb()
+
+            const newLabData = {
+                name: 'Science lab',
+                turnDurationMinutes: 10,
+                ip: '192.168.100.20',
+                port: '1000',
+                state: 'active'
+            }
+
+            const response = await api
+                .post('/laboratories')
+                .send(newLabData)
+                .expect(401)
+
+            const labsAtEnd = await helper.laboratoriesInDb()
+
+            expect(labsAtEnd).toEqual(labsAtStart)
+            expect(response.text).toContain('jwt must be provided')
+        })
+
         test('fails if there is missing data', async () => {
             const labsAtStart = await helper.laboratoriesInDb()
+
+            const user = await helper.loginAs('facundo')
 
             const response = await api
                 .post('/laboratories')
                 .send({})
+                .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
 
             const labsAtEnd = await helper.laboratoriesInDb()
