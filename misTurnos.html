@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
 <body>
-    <nav class="navbar " style="background-color: #163297;">
+    <nav class="navbar " style="background-color: #163297; position: fixed; width: 100%;">
         <div class="container-fluid">
             <a class="navbar-brand text-white fs-5" href="#">
                 <img src="img/logo.png" alt="Logo" width="100" height="100" class="d-inline-block align-text-top img-fluid">
@@ -45,90 +45,92 @@
             </nav>
         </div>
     </nav>
-    <div class="container bg-light rounded my-5">
-        <div class="row"></div>
-            <div class="col-12 col-md-12 mt-3">
-                <h1 class="mb-3">Turno actual</h1>
-                <div class="col-12 col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <h5 class="card-title">Nombre Laboratorio</h5>
-                          <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                          <p class="card-text">Descripcion</p>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <div class="container bg-light rounded my-5">
+            <div class="row"></div>
+                <div class="col-12 col-md-12 mt-3">
+                    <h1 class="mb-3">Turno actual</h1>
+                    <div class="col-12 col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                            <h5 class="card-title">Nombre Laboratorio</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
+                            <p class="card-text">Descripcion</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5 col-md-4">
+                                <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Cancelar turno</button>
+                            </div>
+                            <div class="col-sm-7 col-md-8">
+                                <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
+                            </div>   
+                        </div>
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmar</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Está seguro que desea cancelar el turno?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Salir</button>
+                                        <button type="button" class="btn btn-primary">Confirmar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                    </div>
+                    <h1 class="mt-5">Mis turnos</h1>
+                    <div class="col-12 col-md-8">
+                        <div class="row">
+                            <div class="col-sm-5 col-md-4">
+                                <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Cancelar turno</button>
+                            </div>
+                            <div class="col-sm-7 col-md-8">
+                                <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
+                            </div>   
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-5 col-md-4">
-                            <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Cancelar turno</button>
-                        </div>
-                        <div class="col-sm-7 col-md-8">
-                            <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
-                        </div>   
-                    </div>
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmar</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="col-12 col-md-6 mt-3">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                <h5 class="card-title">Nombre Laboratorio</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
+                                <p class="card-text">Descripcion</p>
                                 </div>
-                                <div class="modal-body">
-                                    ¿Está seguro que desea cancelar el turno?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Salir</button>
-                                    <button type="button" class="btn btn-primary">Confirmar</button>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                <h5 class="card-title">Nombre Laboratorio</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
+                                <p class="card-text">Descripcion</p>
                                 </div>
                             </div>
                         </div>
-                    </div>   
+                        <div class="col-12 col-md-6 mt-3">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                <h5 class="card-title">Nombre Laboratorio</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
+                                <p class="card-text">Descripcion</p>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                <h5 class="card-title">Nombre Laboratorio</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
+                                <p class="card-text">Descripcion</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
                 </div>
-                <h1 class="mt-5">Mis turnos</h1>
-                <div class="col-12 col-md-8">
-                    <div class="row">
-                        <div class="col-sm-5 col-md-4">
-                            <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Cancelar turno</button>
-                        </div>
-                        <div class="col-sm-7 col-md-8">
-                            <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
-                        </div>   
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mt-3">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                              <h5 class="card-title">Nombre Laboratorio</h5>
-                              <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                              <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                              <h5 class="card-title">Nombre Laboratorio</h5>
-                              <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                              <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 mt-3">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                              <h5 class="card-title">Nombre Laboratorio</h5>
-                              <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                              <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                              <h5 class="card-title">Nombre Laboratorio</h5>
-                              <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                              <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>  
-            </div>
+
         </div>
     </div>
 </body>
