@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 
-let app, supertest, api, orm, helper, User
+let app, supertest, api, orm, helper, User, Laboratory
 
 beforeAll(async () => {
     app = await require('../app')
@@ -9,6 +9,7 @@ beforeAll(async () => {
 
     orm = require('../utils/model')
     User = orm.model('User')
+    Laboratory = orm.model('Laboratory')
 
     helper = require('./helper')
     await helper.syncDatabase()
@@ -199,6 +200,64 @@ describe('when there is initially no laboratories in the database', () => {
 
             expect(labsAtEnd).toEqual(labsAtStart)
             expect(error).toEqual('name; duration of turn; ip; or status missing')
+        })
+    })
+})
+
+
+describe('when there are some laboratories in the database', () => {
+    beforeAll(async () => {
+        await helper.truncateTables(['Laboratory'])
+
+        await Laboratory.create({
+            name: 'Laboratory of geosphere',
+            turnDurationMinutes: 10,
+            ip: '192.168.100.20',
+            port: '3000',
+            state: 'active'
+        })
+        await Laboratory.create({
+            name: 'Laboratory of physics',
+            turnDurationMinutes: 10,
+            ip: '192.168.100.21',
+            port: '3000',
+            state: 'active'
+        })
+        await Laboratory.create({
+            name: 'Laboratory of chemestry',
+            turnDurationMinutes: 10,
+            ip: '192.168.100.22',
+            port: '3000',
+            state: 'inactive'
+        })
+        await Laboratory.create({
+            name: 'Laboratory of thermodynamics',
+            turnDurationMinutes: 10,
+            ip: '192.168.100.23',
+            port: '3000',
+            state: 'approval_pending'
+        })
+    })
+
+    describe('viewing of laboratories', () => {
+        test('all users can see active and inactive laboratories', async () => {
+            const user = await helper.loginAs('james')
+
+            const labsInDb = await helper.laboratoriesInDb()
+            const activeAndInactiveLabs = labsInDb.filter(lab => (lab.state === 'active' || lab.state === 'inactive'))
+
+            console.log(labsInDb)
+            console.log(activeAndInactiveLabs)
+
+            const response = await api
+                .get('/laboratories/active')
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            const labs = response.body
+
+            expect(labs).toEqual(activeAndInactiveLabs)
         })
     })
 })
