@@ -1,0 +1,52 @@
+// Styles
+import "./style-misTurnos.css";
+
+const handleLogin = (e) => {
+  e.preventDefault();
+  console.log("Login");
+};
+
+const Login = () => {
+  return (
+    <form onSubmit={handleLogin}>
+      <div className="div-principal">
+        <div className="container-fluid ">
+          <div className="row justify-content-center ">
+            <div className="col-10 col-sm-6 bg-white rounded my-5 p-5 ">
+              <h1 className="text-center p-4">Inicio de sesión</h1>
+              <div className="form-floating mb-3">
+                <input
+                  type="email"
+                  className="form-control"
+                  id="floatingInput"
+                  placeholder="Correo"
+                ></input>
+                <label for="floatingInput">Correo Electronico</label>
+              </div>
+              <div className="form-floating ">
+                <input
+                  type="password"
+                  className="form-control"
+                  id="floatingPassword"
+                  placeholder="Password"
+                ></input>
+                <label for="floatingPassword">Contraseña</label>
+              </div>
+              <div className="p-4"></div>
+              <div className="d-flex justify-content-center">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg text-center justify-content-center"
+                >
+                  Iniciar Sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+export default Login;
