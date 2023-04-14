@@ -8,6 +8,7 @@ beforeAll(async () => {
     api = supertest(app)
 
     orm = require('../utils/model')
+    console.log(orm)
     User = orm.model('User')
     Laboratory = orm.model('Laboratory')
 
@@ -245,19 +246,50 @@ describe('when there are some laboratories in the database', () => {
 
             const labsInDb = await helper.laboratoriesInDb()
             const activeAndInactiveLabs = labsInDb.filter(lab => (lab.state === 'active' || lab.state === 'inactive'))
-
-            console.log(labsInDb)
-            console.log(activeAndInactiveLabs)
+            const activeAndInactiveLabsNames = activeAndInactiveLabs.map(lab => lab.name)
 
             const response = await api
-                .get('/laboratories/active')
+                .get('/laboratories/active-inactive')
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
 
             const labs = response.body
+            const labsNames = labs.map(lab => lab.name)
 
-            expect(labs).toEqual(activeAndInactiveLabs)
+            expect(labsNames).toEqual(activeAndInactiveLabsNames)
+        })
+
+        test('administrators can see approval pending laboratories', async () => {
+            const user = await helper.loginAs('facundo')
+
+            const labsInDb = await helper.laboratoriesInDb()
+            const approvalPendingLabs = labsInDb.filter(lab => lab.state === 'approval_pending')
+            const approvalPendingLabsNames = approvalPendingLabs.map(lab => lab.name)
+
+            const response = await api
+                .get('/laboratories/approval_pending')
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            const labs = response.body
+            const labsNames = labs.map(lab => lab.name)
+
+            expect(labsNames).toEqual(approvalPendingLabsNames)
+        })
+
+        test('default users can not see approval pending laboratories', async () => {
+            const user = await helper.loginAs('james')
+
+            const response = await api
+                .get('/laboratories/approval_pending')
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(401)
+
+            const error = response.body.error
+
+            expect(error).toEqual('not authorized to perform that action')
         })
     })
 })

@@ -15,6 +15,16 @@ const getTokenFrom = request => {
     return null
 }
 
+const stripLabInfo = lab => {
+    return {
+        name: lab.name,
+        turnDurationMinutes: lab.turnDurationMinutes,
+        ip: lab.ip,
+        port: lab.port,
+        state: lab.state
+    }
+}
+
 labRouter.post('/', async (request, response, next) => {
     const { name, turnDurationMinutes, ip, port, status } = request.body
 
@@ -63,6 +73,33 @@ labRouter.post('/', async (request, response, next) => {
         }
     }
 
+})
+
+labRouter.get('/:states', async (request, response) => {
+    const states = request.params.states.split('-')
+
+    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'invalid token' })
+    }
+
+    const user = await User.findOne({ where: { id: decodedToken.id } })
+
+    if (states.find(state => state === 'approval_pending')) {
+        if (user.role !== 'administrator') {
+            throw new Error('unauthorized')
+        }
+    }
+
+    const labs = await Laboratory.findAll({
+        where: {
+            state: states
+        }
+    })
+
+    const labsInfo = labs.map(lab => { console.log(stripLabInfo(lab)); return stripLabInfo(lab) })
+
+    response.status(200).json(labsInfo)
 })
 
 module.exports = labRouter
