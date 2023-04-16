@@ -1,5 +1,3 @@
-const logger = require('./logger')
-
 var filesystem = require('fs')
 var models = {}
 var relationships = {}
@@ -22,11 +20,7 @@ var singleton = function singleton(){
             sequelize = new Sequelize(database, username, password, obj)
         }
 
-        sequelize.authenticate()
-            .then(() => {
-                logger.info('Connected to database')
-                init()
-            })
+        init()
     }
 
     this.model = function (name){
