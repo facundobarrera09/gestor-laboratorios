@@ -39,6 +39,13 @@ beforeAll(async () => {
         port: '3000',
         state: 'active'
     })
+    await Laboratory.create({
+        name: 'Laboratory of physics',
+        turnDurationMinutes: 10,
+        ip: '192.168.100.21',
+        port: '3000',
+        state: 'active'
+    })
 })
 
 describe('when there are no turns in the database', () => {
@@ -47,7 +54,7 @@ describe('when there are no turns in the database', () => {
     })
 
     describe('creation of a turn', () => {
-        test('succeeds with valid data and user creates turn for themselfs', async () => {
+        test('succeeds with valid data and user creates turn for themselves', async () => {
             const turnsAtStart = await helper.turnsInDb()
 
             const user = await helper.loginAs('james')
@@ -215,27 +222,27 @@ describe('when there are no turns in the database', () => {
     })
 })
 
-describe('when there is a couple of turns in the database', () => {
-    beforeEach(async () => {
-        await helper.truncateTables(['Turn'])
-
-        await Turn.create({
-            date: new Date(),
-            turn: 1,
-            accessingUserId: 1,
-            creatingUserId: 1,
-            laboratoryId: 1
-        })
-        await Turn.create({
-            date: new Date(),
-            turn: 2,
-            accessingUserId: 1,
-            creatingUserId: 1,
-            laboratoryId: 1
-        })
-    })
-
+describe('when there are some turns in the database', () => {
     describe('creation of a turn', () => {
+        beforeEach(async () => {
+            await helper.truncateTables(['Turn'])
+
+            await Turn.create({
+                date: new Date(),
+                turn: 1,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 2,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+        })
+
         test('fails if turn is already occupied', async () => {
             const turnsAtStart = await helper.turnsInDb()
 
@@ -260,6 +267,128 @@ describe('when there is a couple of turns in the database', () => {
 
             expect(turnsAtEnd).toEqual(turnsAtStart)
             expect(error).toEqual('turn already reserved')
+        })
+    })
+
+    describe('viewing of turns', () => {
+        beforeAll(async () => {
+            await helper.truncateTables(['Turn'])
+
+            await Turn.create({
+                date: new Date(),
+                turn: 1,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 2,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+
+            await Turn.create({
+                date: new Date(),
+                turn: 1,
+                accessingUserId: 2,
+                creatingUserId: 1,
+                laboratoryId: 2
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 2,
+                accessingUserId: 2,
+                creatingUserId: 2,
+                laboratoryId: 2
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 3,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 2
+            })
+        })
+
+        test('all users can check for available turns for a lab', async () => {
+            const user = await helper.loginAs('james')
+            const labId = 1
+
+            const allTurnsInDb = await helper.turnsInDb()
+            const turnsInDbForLab = allTurnsInDb.map(turn => turn.laboratoryId === labId)
+            const turnsInDb = turnsInDbForLab.map(turn => turn.turn)
+
+            const now = new Date()
+            const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+
+            const response = await api
+                .get(`/turns/${labId}/available?date=${date}`)
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            const availableTurnsData = response.body.availableTurns
+            const availableTurns = availableTurnsData.map(turn => turn.turn)
+
+            expect(availableTurns).not.toContain(turnsInDb)
+        })
+
+        test('administrators can check detailed information about all turns for a lab', async () => {
+            const user = await helper.loginAs('facundo')
+            const labId = 1
+
+            const allTurnsInDb = await helper.turnsInDb(true)
+            const turnsInDbForLab = allTurnsInDb.filter(turn => turn.laboratoryId === labId)
+            const turnsInDb = turnsInDbForLab.map(turn => {
+                return { turn: turn.id, accessingUserId: turn.accessingUserId }
+            })
+
+            const now = new Date()
+            const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+
+            const response = await api
+                .get(`/turns/${labId}/detailed?date=${date}`)
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            let reservedTurns = response.body.reservedTurns
+            reservedTurns = reservedTurns.map(turn => {
+                return { turn: turn.id, accessingUserId: turn.accessingUserId }
+            })
+
+            expect(reservedTurns).toEqual(turnsInDb)
+        })
+
+        test('default users can get detailed information about their turns', async () => {
+            const user = await helper.loginAs('james')
+            const labId = 2
+
+            const allTurnsInDb = await helper.turnsInDb(true)
+            const turnsInDbForLab = allTurnsInDb.filter(turn =>
+                turn.laboratoryId === labId && turn.accessingUserId === user.id
+            )
+            const turnsInDb = turnsInDbForLab.map(turn => {
+                return { turn: turn.id, accessingUserId: turn.accessingUserId }
+            })
+
+            const now = new Date()
+            const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+
+            const response = await api
+                .get(`/turns/${labId}/detailed?date=${date}`)
+                .set('authorization', `Bearer ${user.token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            let reservedTurns = response.body.reservedTurns
+            reservedTurns = reservedTurns.map(turn => {
+                return { turn: turn.id, accessingUserId: turn.accessingUserId }
+            })
+
+            expect(reservedTurns).toEqual(turnsInDb)
         })
     })
 })

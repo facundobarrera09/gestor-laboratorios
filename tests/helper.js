@@ -13,18 +13,21 @@ const syncDatabase = async () => {
     await sequelize.sync({ force: true })
 }
 
-const usersInDb = async () => {
-    const allUsers = await User.findAll()
+const usersInDb = async (raw) => {
+    raw = raw ? raw : false
+    const allUsers = await User.findAll({ raw })
     return allUsers
 }
 
-const turnsInDb = async () => {
-    const allTurns = await Turn.findAll()
+const turnsInDb = async (raw) => {
+    raw = raw ? raw : false
+    const allTurns = await Turn.findAll({ raw })
     return allTurns
 }
 
-const laboratoriesInDb = async () => {
-    const allLabs = await Laboratory.findAll()
+const laboratoriesInDb = async (raw) => {
+    raw = raw ? raw : false
+    const allLabs = await Laboratory.findAll({ raw })
     return allLabs
 }
 

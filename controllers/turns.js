@@ -30,6 +30,18 @@ const checkTurnAvailability = async (laboratoryId, date, turn) => {
     return (reservedTurn) ? false : true
 }
 
+const getAvailableTurns = (reserverdTurns, amountOfTurns) => {
+    let availableTurns = []
+
+    for (let x = 1; x <= amountOfTurns; x++) {
+        if (!reserverdTurns.find(turn => turn === x)) {
+            availableTurns.push(x)
+        }
+    }
+
+    return availableTurns
+}
+
 turnsRouter.post('/', async (request, response, next) => {
     let { date, turn, accessingUserId, laboratoryId } = request.body
 
@@ -102,6 +114,59 @@ turnsRouter.post('/', async (request, response, next) => {
             next(error)
         }
     }
+})
+
+turnsRouter.get('/:labId/available', async (request, response) => {
+    const labId = request.params.labId
+    const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
+    date.setHours(0,0,0,0)
+
+    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'invalid token' })
+    }
+    const user = await User.findOne({ where: { id: decodedToken.id } })
+    if (!user) {
+        throw new Error('unauthorized')
+    }
+
+    const lab = await Laboratory.findOne({ where: { id: labId } })
+    if (!lab) {
+        return response.status(400).json({ error: 'laboratory does not exist' })
+    }
+    const amountOfTurns = (24*60)/lab.turnDurationMinutes
+
+    const reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId } })
+    const reservedTurnsNumbers = reservedTurns.map(turn => turn.turn)
+
+    response.status(200).json({ availableTurns: getAvailableTurns(reservedTurnsNumbers, amountOfTurns) })
+})
+
+turnsRouter.get('/:labId/detailed', async (request, response) => {
+    const labId = request.params.labId
+    const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
+    date.setHours(0,0,0,0)
+
+    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'invalid token' })
+    }
+    const user = await User.findOne({ where: { id: decodedToken.id } })
+    if (!user) {
+        throw new Error('unauthorized')
+    }
+
+    const lab = await Laboratory.findOne({ where: { id: labId } })
+    if (!lab) {
+        return response.status(400).json({ error: 'laboratory does not exist' })
+    }
+
+    let reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId } })
+    if (user.role === 'default') {
+        reservedTurns = reservedTurns.filter(turn => turn.accessingUserId === user.id)
+    }
+
+    response.status(200).json({ reservedTurns })
 })
 
 module.exports = turnsRouter
