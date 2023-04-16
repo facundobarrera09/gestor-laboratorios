@@ -97,7 +97,7 @@ labRouter.get('/:states', async (request, response) => {
         }
     })
 
-    const labsInfo = labs.map(lab => { console.log(stripLabInfo(lab)); return stripLabInfo(lab) })
+    const labsInfo = labs.map(lab => stripLabInfo(lab) )
 
     response.status(200).json(labsInfo)
 })

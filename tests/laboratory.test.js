@@ -8,7 +8,6 @@ beforeAll(async () => {
     api = supertest(app)
 
     orm = require('../utils/model')
-    console.log(orm)
     User = orm.model('User')
     Laboratory = orm.model('Laboratory')
 
