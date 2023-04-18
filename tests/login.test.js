@@ -36,7 +36,7 @@ describe('login when there is initially two users in the database', () => {
         }
 
         const response = await api
-            .post('/login')
+            .post('/api/login')
             .send(user)
             .expect(200)
             .expect('Content-Type', /application\/json/)
@@ -54,7 +54,7 @@ describe('login when there is initially two users in the database', () => {
         }
 
         const response = await api
-            .post('/login')
+            .post('/api/login')
             .send(user)
             .expect(401)
 
@@ -64,7 +64,7 @@ describe('login when there is initially two users in the database', () => {
 
     test('fails with missing data', async () => {
         const response = await api
-            .post('/login')
+            .post('/api/login')
             .send({})
             .expect(400)
 

@@ -47,7 +47,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('facundo')
 
             await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
@@ -73,7 +73,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -99,7 +99,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -125,7 +125,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -151,7 +151,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('james')
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(401)
@@ -174,7 +174,7 @@ describe('when there is initially no laboratories in the database', () => {
             }
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send(newLabData)
                 .expect(401)
 
@@ -190,7 +190,7 @@ describe('when there is initially no laboratories in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/laboratories')
+                .post('/api/laboratories')
                 .send({})
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -248,7 +248,7 @@ describe('when there are some laboratories in the database', () => {
             const activeAndInactiveLabsNames = activeAndInactiveLabs.map(lab => lab.name)
 
             const response = await api
-                .get('/laboratories/active-inactive')
+                .get('/api/laboratories/active-inactive')
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -267,7 +267,7 @@ describe('when there are some laboratories in the database', () => {
             const approvalPendingLabsNames = approvalPendingLabs.map(lab => lab.name)
 
             const response = await api
-                .get('/laboratories/approval_pending')
+                .get('/api/laboratories/approval_pending')
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -282,7 +282,7 @@ describe('when there are some laboratories in the database', () => {
             const user = await helper.loginAs('james')
 
             const response = await api
-                .get('/laboratories/approval_pending')
+                .get('/api/laboratories/approval_pending')
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(401)
 

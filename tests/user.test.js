@@ -48,7 +48,7 @@ describe('when there is initially three users in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/users')
+                .post('/api/users')
                 .send(newUserData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
@@ -75,7 +75,7 @@ describe('when there is initially three users in the database', () => {
             }
 
             const response = await api
-                .post('/users')
+                .post('/api/users')
                 .send(newUserData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(401)
@@ -97,7 +97,7 @@ describe('when there is initially three users in the database', () => {
             }
 
             const response = await api
-                .post('/users')
+                .post('/api/users')
                 .send(newUserData)
                 .expect(401)
 
@@ -114,7 +114,7 @@ describe('when there is initially three users in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/users')
+                .post('/api/users')
                 .send({})
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -136,7 +136,7 @@ describe('when there is initially three users in the database', () => {
             const user = await helper.loginAs('facundo')
 
             await api
-                .post('/users')
+                .post('/api/users')
                 .send(newUserData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -158,7 +158,7 @@ describe('when there is initially three users in the database', () => {
             const user = await helper.loginAs('facundo')
 
             const response = await api
-                .post('/users')
+                .post('/api/users')
                 .send(newUserData)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)

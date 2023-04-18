@@ -67,7 +67,7 @@ describe('when there are no turns in the database', () => {
             }
 
             await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
@@ -90,7 +90,7 @@ describe('when there are no turns in the database', () => {
             }
 
             await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(201)
@@ -113,7 +113,7 @@ describe('when there are no turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -138,7 +138,7 @@ describe('when there are no turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -163,7 +163,7 @@ describe('when there are no turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(401)
@@ -186,7 +186,7 @@ describe('when there are no turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .expect(401)
 
@@ -208,7 +208,7 @@ describe('when there are no turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -257,7 +257,7 @@ describe('when there are some turns in the database', () => {
             }
 
             const response = await api
-                .post('/turns')
+                .post('/api/turns')
                 .send(turn)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(400)
@@ -324,7 +324,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/turns/${labId}/available?date=${date}`)
+                .get(`/api/turns/${labId}/available?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -349,7 +349,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/turns/${labId}/detailed?date=${date}`)
+                .get(`/api/turns/${labId}/detailed?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -378,7 +378,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/turns/${labId}/detailed?date=${date}`)
+                .get(`/api/turns/${labId}/detailed?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
