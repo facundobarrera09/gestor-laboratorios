@@ -4,7 +4,7 @@ import "./style-navbar.css";
 
 const Navbar = () => {
   return (
-    <nav className="navbar navbar-principal ">
+    <nav className="navbar navbar-principal p-0 mb-10">
       <div className="container-fluid">
         <NavLink className="navbar-brand text-white fs-5" to="/">
           Laboratorio Ciasur
@@ -42,12 +42,18 @@ const Navbar = () => {
                     Mis Turnos
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link text-white " to="/registrarTurno">
+                    Registrar Turnos
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </div>
         </NavLink>
       </div>
     </nav>
+    
   );
 };
 

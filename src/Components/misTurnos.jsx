@@ -1,146 +1,94 @@
+import { useEffect, useState } from "react";
+//Components
+import MisTurnosBody from "./MisTurnosBody";
+import TurnoActualBody from "./TurnoActualBody";
+
 // Styles
 
+// Data for testing
+const data = [
+  {
+    nombre: "Laboratorio 1",
+    fecha: "01/01/2021",
+    hora: "10:00",
+    descripcion: "Descripcion 1",
+  },
+];
+const dataMisTurnos = [
+  {
+    nombre: "Laboratorio 2",
+    fecha: "01/01/2021",
+    hora: "10:00",
+    descripcion: "Descripcion 1",
+  },
+  {
+    nombre: "Laboratorio 3",
+    fecha: "01/01/2021",
+    hora: "10:00",
+    descripcion: "Descripcion 1",
+  },
+  {
+    nombre: "Laboratorio 4",
+    fecha: "01/01/2021",
+    hora: "10:00",
+    descripcion: "Descripcion 1",
+  },
+  {
+    nombre: "Laboratorio 5",
+    fecha: "01/01/2021",
+    hora: "10:00",
+    descripcion: "Descripcion 1",
+  },
+];
 
 const MisTurnos = () => {
+  const [turnos, setTurnos] = useState([]);
+  useEffect(() => {
+    setTurnos(data);
+  }, []);
+  const [MisTurnos, setMisTurnos] = useState([]);
+  useEffect(() => {
+    setMisTurnos(dataMisTurnos);
+  }, []);
+
   return (
-      <div className="div-principal">
-        <div className="container bg-light rounded my-5">
-          
-          <div className="col-12 col-md-12 mt-3">
-            <h1 className="mb-3">Turno actual</h1>
-            <div className="col-12 col-md-12">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">Nombre Laboratorio</h5>
-                  <h6 className="card-subtitle mb-2 text-body-secondary">
-                    Fecha Hora
-                  </h6>
-                  <p className="card-text">Descripcion</p>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-sm-5 col-md-4">
-                  <button
-                    type="button"
-                    className="btn btn-success  mt-2 w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#staticBackdrop"
-                  >
-                    Cancelar turno
-                  </button>
-                </div>
-                <div className="col-sm-7 col-md-8">
-                  <button type="button" className="btn btn-primary mt-2  w-100">
-                    Acceder
-                  </button>
-                </div>
-              </div>
-              <div
-                className="modal fade"
-                id="staticBackdrop"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
-                tabindex="-1"
-                aria-labelledby="staticBackdropLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h1 className="modal-title fs-5" id="staticBackdropLabel">
-                        Confirmar
-                      </h1>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div className="modal-body">
-                      ¿Está seguro que desea cancelar el turno?
-                    </div>
-                    <div className="modal-footer">
-                      <button
-                        type="button"
-                        className="btn btn-success"
-                        data-bs-dismiss="modal"
-                      >
-                        Salir
-                      </button>
-                      <button type="button" className="btn btn-primary">
-                        Confirmar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h1 className="mt-5">Mis turnos</h1>
-            <div className="col-12 col-md-8">
-              <div className="row">
-                <div className="col-sm-5 col-md-4">
-                  <button
-                    type="button"
-                    className="btn btn-success  mt-2 w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#staticBackdrop"
-                  >
-                    Cancelar turno
-                  </button>
-                </div>
-                <div className="col-sm-7 col-md-8">
-                  <button type="button" className="btn btn-primary mt-2  w-100">
-                    Acceder
-                  </button>
-                </div>
-              </div>
-            </div>
+    <div className="div-principal ">
+      <div className="container bg-light rounded my-5">
+        <div className="col-12 col-md-12 mt-3">
+          <h1 className="mb-3">Turno actual</h1>
+          {turnos.map((turnos, index) => (
+            <TurnoActualBody index={index} turnos={turnos} />
+          ))}
+          <h1 className="mt-5">Mis turnos</h1>
+          <div className="col-12 col-md-8">
             <div className="row">
-              <div className="col-12 col-md-6 mt-3">
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <h5 className="card-title">Nombre Laboratorio</h5>
-                    <h6 className="card-subtitle mb-2 text-body-secondary">
-                      Fecha Hora
-                    </h6>
-                    <p className="card-text">Descripcion</p>
-                  </div>
-                </div>
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <h5 className="card-title">Nombre Laboratorio</h5>
-                    <h6 className="card-subtitle mb-2 text-body-secondary">
-                      Fecha Hora
-                    </h6>
-                    <p className="card-text">Descripcion</p>
-                  </div>
-                </div>
+              <div className="col-sm-5 col-md-4">
+                <button
+                  type="button"
+                  className="btn btn-success  mt-2 w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop"
+                >
+                  Cancelar turno
+                </button>
               </div>
-              <div className="col-12 col-md-6 mt-3">
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <h5 className="card-title">Nombre Laboratorio</h5>
-                    <h6 className="card-subtitle mb-2 text-body-secondary">
-                      Fecha Hora
-                    </h6>
-                    <p className="card-text">Descripcion</p>
-                  </div>
-                </div>
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <h5 className="card-title">Nombre Laboratorio</h5>
-                    <h6 className="card-subtitle mb-2 text-body-secondary">
-                      Fecha Hora
-                    </h6>
-                    <p className="card-text">Descripcion</p>
-                  </div>
-                </div>
+              <div className="col-sm-7 col-md-8">
+                <button type="button" className="btn btn-primary mt-2  w-100">
+                  Acceder
+                </button>
               </div>
             </div>
           </div>
+          <div className="row">
+              {MisTurnos.map((MisTurnos, index) =>
+                (index + 1) % 2 == 0 ? (
+                  <MisTurnosBody index={index} MisTurnos={MisTurnos} />
+                ) : <MisTurnosBody index={index} MisTurnos={MisTurnos} />
+              )}
+          </div>
         </div>
       </div>
+    </div>
   );
 };
 
