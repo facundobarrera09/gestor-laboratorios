@@ -15,6 +15,7 @@ import "./index.css";
 import "@popperjs/core/dist/umd/popper.min.js";
 import "bootstrap/dist/js/bootstrap.min.js";
 import "./Components/style-misTurnos.css";
+import Login from "./Components/login";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
@@ -22,6 +23,7 @@ root.render(
       <body>
         <NavBar />
         <Routes>
+          
           <Route path="/" element={<App />} />
           <Route path="*" element={<h1>404: Not Found</h1>} />
           <Route path="/misTurnos" element={<MisTurnos />} />

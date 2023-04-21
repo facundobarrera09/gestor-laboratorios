@@ -1,12 +1,24 @@
 // Styles
 import "./style-misTurnos.css";
-
-const handleLogin = (e) => {
-  e.preventDefault();
-  console.log("Login");
-};
+// Componente jquery
+import $ from "jquery";
+// Componente de react
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const handleLogin = (e) => {
+    e.preventDefault();
+    console.log("Login");
+    // Crear el objeto JSON
+    var login = {
+      correo: $("#floatingInput").val(),
+      contrasena: $("#floatingPassword").val(),
+    };
+    var loginString = JSON.stringify(login);
+    localStorage.setItem("login", loginString);
+    navigate("/misTurnos");
+  };
   return (
     <form onSubmit={handleLogin}>
       <div className="div-principal">
@@ -21,7 +33,7 @@ const Login = () => {
                   id="floatingInput"
                   placeholder="Correo"
                 ></input>
-                <label for="floatingInput">Correo Electronico</label>
+                <label htmlFor="floatingInput">Correo Electronico</label>
               </div>
               <div className="form-floating ">
                 <input
@@ -30,7 +42,7 @@ const Login = () => {
                   id="floatingPassword"
                   placeholder="Password"
                 ></input>
-                <label for="floatingPassword">Contraseña</label>
+                <label htmlFor="floatingPassword">Contraseña</label>
               </div>
               <div className="p-4"></div>
               <div className="d-flex justify-content-center">
