@@ -1,33 +1,60 @@
-
 const loginPostUrl = 'http://localhost:3001/api/login'
-const nextPageUrl = './misTurnos.html'  
+const nextPageUrl = '/misTurnos.html'
 
 let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
-console.log(userData)
-if (userData.username) {
-    window.location.href = nextPageUrl
-}
+try {
+    if (userData.username) {
+        window.location.replace(nextPageUrl)
+    }
+} catch (e) { /* empty */ }
+
 
 let form = document.getElementById('login-form')
+const mySearchParams = new URLSearchParams(window.location.search)
+
+const notifyError = (error) => {
+
+    // <div class="alert alert-danger" role="alert">
+    //     ALERT!
+    // </div>
+
+    const div = document.createElement('div')
+    const text = document.createTextNode(error)
+
+    div.className = 'alert alert-danger'
+    div.role = 'alert'
+    div.appendChild(text)
+
+    form.insertBefore(div, form.firstChild)
+
+    setTimeout(() => {
+        div.remove()
+    }, 5000)
+}
+
+if (mySearchParams.get('error') === 'expired') {
+    notifyError('La sesión a expirado')
+}
+
 form.onsubmit = (event) => {
     event.preventDefault()
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", loginPostUrl);
-    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', loginPostUrl)
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8')
 
     xhr.onload = () => {
-        if (xhr.readyState == 4 && xhr.status == 200) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             // save user data
-            window.localStorage.setItem('userLoginData', xhr.responseText)
+            localStorage.setItem('userLoginData', xhr.responseText)
 
             // redirect user to new page
-            window.location.href = nextPageUrl
+            window.location.replace(nextPageUrl)
 
         } else {
-            console.log(`Error: ${xhr.status}`);
+            notifyError('Usuario o contraseña incorrectos')
         }
-    };
+    }
 
     xhr.send(JSON.stringify({
         username: event.target.username.value,

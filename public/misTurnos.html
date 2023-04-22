@@ -25,17 +25,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Información</a>
                     </li>
+                    <li class="nav-item">
+                        <a onclick="logout()" class="nav-link" href="#">Cerrar Sesión</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-        <div class="container bg-light rounded my-5">
+    <div class="pt-sm-5" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <div class="container bg-light rounded col-12 col-md-9 my-5">
             <div class="row"></div>
             <div class="col-12 col-md-12 mt-3">
                 <div id="turno-actual-container" class="mb-5">
-                    <h1 class="mb-3">Turno actual</h1>
+                    <h1 id="turno-actual-titulo" class="mb-3">Turno actual</h1>
                     <div class="col-12 col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -45,11 +48,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-5 col-md-4">
-                                <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal"
+                            <div class="col-sm-6 col-md-6">
+                                <button type="button" class="btn btn-success mt-2 w-100" data-bs-toggle="modal"
                                     data-bs-target="#staticBackdrop">Cancelar turno</button>
                             </div>
-                            <div class="col-sm-7 col-md-8">
+                            <div class="col-sm-6 col-md-6">
                                 <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
                             </div>
                         </div>
@@ -67,7 +70,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">Salir</button>
-                                        <button type="button" class="btn btn-primary">Confirmar</button>
+                                        <button type="button" onclick="cancelCurrentTurn()" class="btn btn-primary">Confirmar</button>
                                     </div>
                                 </div>
                             </div>
@@ -86,39 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mt-3">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Nombre Laboratorio</h5>
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                                <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Nombre Laboratorio</h5>
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                                <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 mt-3">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Nombre Laboratorio</h5>
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                                <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Nombre Laboratorio</h5>
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha Hora</h6>
-                                <p class="card-text">Descripcion</p>
-                            </div>
-                        </div>
-                    </div>
+                <div id="all-turns-list" class="row">
                 </div>
             </div>
 
@@ -129,6 +100,7 @@
     <script src="./js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="./js/jquery.js"></script>
     <script src="./js/turns.js"></script>
+    <script src="./js/common.js"></script>
 </body>
 
 </html>
