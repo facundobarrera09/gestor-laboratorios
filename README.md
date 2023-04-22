@@ -64,9 +64,18 @@ npm run test
 ## API Usage
 
 ### Login
-  Descripción: Identificarse en el sistema y obtener TOKEN
-  POST - /api/login - Content-Type: application/json - Authorization: Bearer (token)
-    request: {
+  
+  #### Descripción
+  
+    Identificarse en el sistema y obtener TOKEN
+  
+  #### Formato
+  
+    POST - /api/login - Content-Type: application/json - Authorization: Bearer (token)
+  
+  #### Request
+  
+    {
       username: string,
       password: string
     }
@@ -77,9 +86,18 @@ npm run test
     }
 
 ### Users
-  Descripción: Crear un usuario
-  POST - /api/users - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
-    request: {
+  
+  #### Descripción
+  
+    Crear un usuario
+  
+  #### Formato
+  
+    POST - /api/users - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
+  
+  #### Request
+  
+    {
       username: string,
       password: string,
       role: string
@@ -91,20 +109,45 @@ npm run test
     }
 
 ### Laboratories
-  Descripción: Crear un laboratorio
-  POST - /api/laboratories - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
-    request: {
+  
+  #### Descripción
+  
+    Crear un laboratorio
+  
+  #### Formato
+  
+    POST - /api/laboratories - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
+  
+  #### Request
+  
+    {
       username: string,
       password: string,
       role: string
     }
-    response: {}
   
-  Descripción: Obtener información de los laboratorios disponibles según su estado (activos, inactivos, o pendientes de aprovación)
-  GET - /api/laboratories/:states (states: active-inactive-approval_pending (se pueden seleccionar algunos o todos, separados por guión, ultimo necesita permisos de admin)) -
-  Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
-    request: {}
-    response: [{
+  #### Response
+  
+    {}
+  
+  
+  #### Descripción
+  
+    Obtener información de los laboratorios disponibles según su estado (activos, inactivos, o pendientes de aprovación)
+  
+  #### Formato
+  
+    GET - /api/laboratories/:states (states: active-inactive-approval_pending (se pueden seleccionar algunos o todos, separados por guión, ultimo necesita permisos de admin)) -
+    
+    Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
+  
+  #### Request
+  
+    {}
+  
+  #### Response
+  
+    [{
       id: integer,
       name: string,
       turnDurationMinutes: integer,
@@ -114,20 +157,44 @@ npm run test
     }, ...]
 
 ### Turns
-  Descripción: Crear un turno
-  POST - /api/turns - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
-    request: {
+  
+  #### Descripción
+  
+    Crear un turno
+  
+  #### Formato
+  
+    POST - /api/turns - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
+  
+  #### Request
+  
+    {
       date: Date,
       turn: integer,
       accesingUserId: integer (opcional),
       laboratoryId: integer
     }
-    response: {}
+  
+  #### Response
+  
+    {}
 
-  Descripción: Obtener todos los turnos del usuario al que le corresponde el TOKEN
-  GET - /api/turns - Content-Type: application/json - Authorization: Bearer (token)
-    request: {}
-    response: [{
+  
+  #### Descripción
+  
+    Obtener todos los turnos del usuario al que le corresponde el TOKEN
+  
+  #### Formato
+  
+    GET - /api/turns - Content-Type: application/json - Authorization: Bearer (token)
+  
+  #### Request
+  
+    {}
+  
+  #### Response
+  
+    [{
       id: integer,
       date: string (objeto Date en formato string),
       turn: integer,
@@ -136,18 +203,49 @@ npm run test
       laboratoryId: integer
     }, ...]
 
-  Descripción: Obtener los turnos disponibles de un laboratorio en un día determinado
-  Nota: Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  
+  #### Descripción
+  
+    Obtener los turnos disponibles de un laboratorio en un día determinado
+  
+  #### Nota
+  
+    Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  
+  #### Formato
+  
   GET - /api/turns/available/:labId?date=DD-MM-AAAA - Content-Type: application/json - Authorization: Bearer (token)
-    request: {}
-    response: [integer, ...]
+  
+  #### Request
+  
+    {}
+  
+  #### Response
+  
+    [integer, ...]
 
-  Descripción: Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
-  Nota: Si el usuario es administrador, se devuelven todos los turnos del día presentes en la base de datos
-  Nota: Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  
+  #### Descripción
+  
+    Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
+  
+  #### Nota
+  
+  :Si el usuario es administrador, se devuelven todos los turnos del día presentes en la base de datos
+
+  Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  
+  #### Formato
+  
   GET - /api/turns/detailed/:labId - Content-Type: application/json - Authorization: Bearer (token)
-    request: {}
-    response: [{
+  
+  #### Request
+  
+    {}
+  
+  #### Response
+  
+    [{
       id: integer,
       date: string (objeto Date en formato string),
       turn: integer,
