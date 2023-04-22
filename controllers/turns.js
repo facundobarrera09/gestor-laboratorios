@@ -125,7 +125,7 @@ turnsRouter.get('/', async (request, response) => {
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'invalid token' })
     }
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { id: decodedToken.id } })
     if (!user) {
         throw new Error('unauthorized')
     }
@@ -135,7 +135,7 @@ turnsRouter.get('/', async (request, response) => {
     response.status(200).json({ reservedTurns })
 })
 
-turnsRouter.get('/:labId/available', async (request, response) => {
+turnsRouter.get('/available/:labId', async (request, response) => {
     const labId = request.params.labId
     const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
     date.setHours(0,0,0,0)
@@ -161,7 +161,7 @@ turnsRouter.get('/:labId/available', async (request, response) => {
     response.status(200).json({ availableTurns: getAvailableTurns(reservedTurnsNumbers, amountOfTurns) })
 })
 
-turnsRouter.get('/:labId/detailed', async (request, response) => {
+turnsRouter.get('/detailed/:labId', async (request, response) => {
     const labId = request.params.labId
     const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
     date.setHours(0,0,0,0)
