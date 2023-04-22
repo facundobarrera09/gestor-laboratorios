@@ -57,6 +57,10 @@ turnsRouter.post('/', async (request, response, next) => {
 
     const creatingUserId = user.id
 
+    if (!accessingUserId) {
+        accessingUserId = user.id
+    }
+
     if (user.role !== 'administrator' && creatingUserId !== accessingUserId) {
         throw new Error('unauthorized')
     }
@@ -114,6 +118,21 @@ turnsRouter.post('/', async (request, response, next) => {
             next(error)
         }
     }
+})
+
+turnsRouter.get('/', async (request, response) => {
+    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'invalid token' })
+    }
+    const user = await User.findOne({ where: { id: decodedToken.id } })
+    if (!user) {
+        throw new Error('unauthorized')
+    }
+
+    let reservedTurns = await Turn.findAll({ where: { accessingUserId: user.id } })
+
+    response.status(200).json({ reservedTurns })
 })
 
 turnsRouter.get('/:labId/available', async (request, response) => {

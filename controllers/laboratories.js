@@ -17,6 +17,7 @@ const getTokenFrom = request => {
 
 const stripLabInfo = lab => {
     return {
+        id: lab.id,
         name: lab.name,
         turnDurationMinutes: lab.turnDurationMinutes,
         ip: lab.ip,
