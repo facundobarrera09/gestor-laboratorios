@@ -65,20 +65,20 @@ npm run test
 
 ### Login
   
-  > **Descripción**
+  > **Descripción**  
   > Identificarse en el sistema y obtener TOKEN
   >
-  > **Formato**
+  > **Formato**  
   > POST - /api/login - Content-Type: application/json - Authorization: Bearer (token)
   >
-  > **Request**
+  > **Request**  
   > ```json
   > {
   >   username: string,
   >   password: string
   > }
   > ```
-  > **Response**
+  > **Response**  
   > {
   >   username: string,
   >   role: string,
