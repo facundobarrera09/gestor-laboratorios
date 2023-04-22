@@ -323,7 +323,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/api/turns/${labId}/available?date=${date}`)
+                .get(`/api/turns/available/${labId}?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -348,7 +348,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/api/turns/${labId}/detailed?date=${date}`)
+                .get(`/api/turns/detailed/${labId}?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -377,7 +377,7 @@ describe('when there are some turns in the database', () => {
             const date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
             const response = await api
-                .get(`/api/turns/${labId}/detailed?date=${date}`)
+                .get(`/api/turns/detailed/${labId}?date=${date}`)
                 .set('authorization', `Bearer ${user.token}`)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
