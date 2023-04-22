@@ -31,7 +31,7 @@ npm i
 
 Se debe crear el archivo '.env' que contenga los siguientes datos para asegurar el correcto funcionamiento de la aplicación
 
-```sh
+```conf
 PORT=[puerto del servidor]
 
 MYSQL_HOST=[direccion de base de datos]
@@ -60,6 +60,101 @@ npm run dev
 ```sh
 npm run test
 ```
+
+## API Usage
+
+### Login
+  Descripción: Identificarse en el sistema y obtener TOKEN
+  POST - /api/login - Content-Type: application/json - Authorization: Bearer (token)
+    request: {
+      username: string,
+      password: string
+    }
+    response: {
+      username: string,
+      role: string,
+      token: string
+    }
+
+### Users
+  Descripción: Crear un usuario
+  POST - /api/users - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
+    request: {
+      username: string,
+      password: string,
+      role: string
+    }
+    response: {
+      username: string,
+      password: string,
+      role: string
+    }
+
+### Laboratories
+  Descripción: Crear un laboratorio
+  POST - /api/laboratories - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin) )
+    request: {
+      username: string,
+      password: string,
+      role: string
+    }
+    response: {}
+  
+  Descripción: Obtener información de los laboratorios disponibles según su estado (activos, inactivos, o pendientes de aprovación)
+  GET - /api/laboratories/:states (states: active-inactive-approval_pending (se pueden seleccionar algunos o todos, separados por guión, ultimo necesita permisos de admin)) -
+  Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
+    request: {}
+    response: [{
+      id: integer,
+      name: string,
+      turnDurationMinutes: integer,
+      ip: string,
+      port: string,
+      state: string (active, inactive, approval_pending)
+    }, ...]
+
+### Turns
+  Descripción: Crear un turno
+  POST - /api/turns - Content-Type: application/json - Authorization: Bearer (token (usuario debe ser admin en algunas ocasiones) )
+    request: {
+      date: Date,
+      turn: integer,
+      accesingUserId: integer (opcional),
+      laboratoryId: integer
+    }
+    response: {}
+
+  Descripción: Obtener todos los turnos del usuario al que le corresponde el TOKEN
+  GET - /api/turns - Content-Type: application/json - Authorization: Bearer (token)
+    request: {}
+    response: [{
+      id: integer,
+      date: string (objeto Date en formato string),
+      turn: integer,
+      accessingUserId: integer,
+      creatingUserId: integer,
+      laboratoryId: integer
+    }, ...]
+
+  Descripción: Obtener los turnos disponibles de un laboratorio en un día determinado
+  Nota: Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  GET - /api/turns/available/:labId?date=DD-MM-AAAA - Content-Type: application/json - Authorization: Bearer (token)
+    request: {}
+    response: [integer, ...]
+
+  Descripción: Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
+  Nota: Si el usuario es administrador, se devuelven todos los turnos del día presentes en la base de datos
+  Nota: Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  GET - /api/turns/detailed/:labId - Content-Type: application/json - Authorization: Bearer (token)
+    request: {}
+    response: [{
+      id: integer,
+      date: string (objeto Date en formato string),
+      turn: integer,
+      accessingUserId: integer,
+      creatingUserId: integer,
+      laboratoryId: integer
+    }, ...]
 
 ## Author
 
