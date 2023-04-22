@@ -112,6 +112,7 @@ npm run test
   >   role: string
   > }
   > ```
+  > ***
 
 ### Laboratories
   
@@ -133,7 +134,7 @@ npm run test
   > ```js
   > {}
   > ```
-  
+  > ***
   
   > **Descripción**  
   > Obtener información de los laboratorios disponibles según su estado (activos, inactivos, o pendientes de aprovación)
@@ -157,6 +158,7 @@ npm run test
   >   state: string (active, inactive, approval_pending)
   > }, ...]
   > ```
+  > ***
 
 ### Turns
   
@@ -179,8 +181,8 @@ npm run test
   > ```js
   > {}
   > ```
+  > ***
 
-  
   > **Descripción**  
   > Obtener todos los turnos del usuario al que le corresponde el TOKEN
   > 
@@ -202,8 +204,8 @@ npm run test
   >   laboratoryId: integer
   > }, ...]
   > ```
+  > ***
 
-  
   > **Descripción**
   > Obtener los turnos disponibles de un laboratorio en un día determinado
   > 
@@ -221,6 +223,7 @@ npm run test
   > ```js
   > [integer, ...]
   > ```
+  > ***
   
   > **Descripción**
   > Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
@@ -247,6 +250,7 @@ npm run test
   >   laboratoryId: integer
   > }, ...]
   > ```
+  > ***
 
 ## Authors
 
