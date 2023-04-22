@@ -62,7 +62,6 @@ describe('when there are no turns in the database', () => {
             const turn = {
                 date: '2023/07/08 13:15',
                 turn: 1,
-                accessingUserId: user.id,
                 laboratoryId: 1
             }
 
