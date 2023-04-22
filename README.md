@@ -86,6 +86,7 @@ npm run test
   >   token: string
   > }
   > ```
+  > ***
 
 ### Users
   
