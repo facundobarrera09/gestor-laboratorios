@@ -72,18 +72,20 @@ npm run test
   > POST - /api/login - Content-Type: application/json - Authorization: Bearer (token)
   >
   > **Request**  
-  > ```json
+  > ```js
   > {
   >   username: string,
   >   password: string
   > }
   > ```
-  > **Response**  
+  > **Response** 
+  > ```js
   > {
   >   username: string,
   >   role: string,
   >   token: string
   > }
+  > ```
 
 ### Users
   
