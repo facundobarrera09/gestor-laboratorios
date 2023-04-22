@@ -67,6 +67,41 @@ module.exports = sequelize.authenticate()
             })
 
             await Turn.create({
+                date: new Date('2023/04/08 00:00'),
+                turn: 1,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date('2023/04/08 00:00'),
+                turn: 2,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 115,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 116,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
+                date: new Date(),
+                turn: 117,
+                accessingUserId: 1,
+                creatingUserId: 1,
+                laboratoryId: 1
+            })
+            await Turn.create({
                 date: new Date('2024/04/08 00:00'),
                 turn: 1,
                 accessingUserId: 1,
@@ -74,28 +109,21 @@ module.exports = sequelize.authenticate()
                 laboratoryId: 1
             })
             await Turn.create({
-                date: new Date('2024/04/08 00:00'),
-                turn: 2,
-                accessingUserId: 1,
-                creatingUserId: 1,
-                laboratoryId: 1
-            })
-            await Turn.create({
-                date: new Date('2024/04/08 00:00'),
+                date: new Date('2023/04/08 00:00'),
                 turn: 1,
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 2
             })
             await Turn.create({
-                date: new Date('2024/04/08 00:00'),
+                date: new Date('2023/04/08 00:00'),
                 turn: 2,
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 2
             })
             await Turn.create({
-                date: new Date('2024/04/08 00:00'),
+                date: new Date('2023/04/08 00:00'),
                 turn: 3,
                 accessingUserId: 1,
                 creatingUserId: 1,
@@ -103,7 +131,7 @@ module.exports = sequelize.authenticate()
             })
         }
 
-        app.use(express.static('build'))
+        app.use(express.static('public'))
         app.use(express.json())
         app.use(middleware.requestLogger)
 
