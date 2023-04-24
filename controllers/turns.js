@@ -125,12 +125,12 @@ turnsRouter.get('/', async (request, response) => {
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'invalid token' })
     }
-    const user = await User.findOne({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: decodedToken.id } })
     if (!user) {
         throw new Error('unauthorized')
     }
 
-    let reservedTurns = await Turn.findAll({ where: { accessingUserId: user.id } })
+    let reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { accessingUserId: user.id } })
 
     response.status(200).json({ reservedTurns })
 })
