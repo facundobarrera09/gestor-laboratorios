@@ -41,6 +41,7 @@ const errorHandler = (error, request, response, next) => {
         response.status(400).send({ error: 'username already in use' })
     }
 
+    response.status(500).json({ error: 'unknown error occurred' })
     next(error)
 }
 
