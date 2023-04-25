@@ -53,7 +53,7 @@
                                     data-bs-target="#staticBackdrop">Cancelar turno</button>
                             </div>
                             <div class="col-sm-6 col-md-6">
-                                <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
+                                <button type="button" onclick="accessTurn()" class="btn btn-primary mt-2 w-100">Acceder</button>
                             </div>
                         </div>
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">Salir</button>
-                                        <button type="button" onclick="cancelCurrentTurn()" class="btn btn-primary">Confirmar</button>
+                                        <button type="button" onclick="cancelCurrentTurn()" class="btn btn-primary" data-bs-dismiss="modal">Confirmar</button>
                                     </div>
                                 </div>
                             </div>
@@ -78,16 +78,8 @@
                     </div>
                 </div>
                 <h1>Mis turnos</h1>
-                <div class="col-12 col-md-8">
-                    <div class="row">
-                        <div class="col-sm-5 col-md-4">
-                            <button type="button" class="btn btn-success  mt-2 w-100" data-bs-toggle="modal"
-                                data-bs-target="#staticBackdrop">Cancelar turno</button>
-                        </div>
-                        <div class="col-sm-7 col-md-8">
-                            <button type="button" class="btn btn-primary mt-2  w-100">Acceder</button>
-                        </div>
-                    </div>
+                <div class="col-12">
+                    <button type="button" onclick="createTurn()" class="btn btn-primary mt-2 w-100">Registrar turno</button>
                 </div>
                 <div id="all-turns-list" class="row">
                 </div>
