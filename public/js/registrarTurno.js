@@ -1,22 +1,10 @@
-let data = [
-  {
-    name: "Laboratorio de Prueba1",
-    description: "Laboratorio de prueba",
-  },
 
-  {
-    name: "Laboratorio de Prueba2",
-    description: "Laboratorio de prueba",
-  },
-  {
-    name: "Laboratorio de Prueba3",
-    description: "Laboratorio de prueba",
-  },
-  {
-    name: "Laboratorio de Prueba4",
-    description: "Laboratorio de prueba",
-  },
-];
+let userData = JSON.parse(localStorage.getItem('userLoginData'))
+
+const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
+const turnGetUrl = 'http://localhost:3001/api/turns'
+
+let laboratories
 
 // carousel
 const carousel = document.getElementById("carouselExampleIndicators");
@@ -65,7 +53,7 @@ const buttonPrevNext = () => {
 
 const buttonCarusel = () => {
   buttonPrevNext();
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < laboratories.length; i++) {
     let parseI = i.toString();
     const carouselIndicators = document.getElementById("carousel-Indicators");
     let button = document.createElement("button");
@@ -83,7 +71,7 @@ const buttonCarusel = () => {
 
 const listLab = () => {
   buttonCarusel();
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < laboratories.length; i++) {
     const CarouselCuerpo = document.getElementById("carousel-cuerpo");
     const carouselItem = document.createElement("div");
     const cardDiv = document.createElement("div");
@@ -104,8 +92,8 @@ const listLab = () => {
     cardDescription.className = "card-text";
 
     // Data
-    cardTitle.innerText = data[i].name;
-    cardDescription.innerText = data[i].description;
+    cardTitle.innerText = laboratories[i].name;
+    cardDescription.innerText = laboratories[i].description;
     CarouselCuerpo.appendChild(carouselItem);
     carouselItem.appendChild(cardDiv);
     cardDiv.appendChild(cardBody);
@@ -114,68 +102,84 @@ const listLab = () => {
   }
 };
 
-listLab();
+if (userData) {
+  $.ajax({
+    url: laboratoriesGetUrl,
+    headers: { "Authorization": `Bearer ${userData.token}` },
+    type: 'GET',
+    'async': false,
+    success: (response) => {
+      laboratories = response
+      listLab();
+    },
+    error: (error) => {
+      console.log(error)
+    }
+  })
+}
+
 // Data de prueba para los turnos
 
 // Teniendo en cuenta que me van a enviar un numero por cada horario, siendo 0 -> 00:00 y 1 -> 00:10
 let dataTurno = [];
 
-for (let i = 0; i < 144; i++) {
-  let dataObject = {};
-  if (i == 4) {
-    dataObject = {
-      name: "Laboratorio de Prueba1",
-      turnDurationMinutes: i.toString(),
-      state: "inactive",
-      date: "2021-10-10",
-    };
-  } else {
-    dataObject = {
-      name: "Laboratorio de Prueba1",
-      turnDurationMinutes: i.toString(),
-      state: "active",
-      date: "2021-10-10",
-    };
-  }
+if (userData) {
+}
 
-  dataTurno.push(dataObject);
+const generarDatosTurno = () => {
+  for (let i = 0; i < 144; i++) {
+    let dataObject = {};
+    if (i == 4) {
+      dataObject = {
+        name: "Laboratorio de Prueba1",
+        turnDurationMinutes: i.toString(),
+        state: "inactive",
+        date: "2021-10-10",
+      };
+    } else {
+      dataObject = {
+        name: "Laboratorio de Prueba1",
+        turnDurationMinutes: i.toString(),
+        state: "active",
+        date: "2021-10-10",
+      };
+    }
+
+    dataTurno.push(dataObject);
+  }
 }
 
 console.log(dataTurno);
 
 const listHours = document.getElementById("hora");
 let turnDurationMinutes = 0;
-for (let i = 0; i < 24; i++) {
-  const option = document.createElement("option");
-  option.value = i;
-  if (i < 10) {
-    option.textContent = "0" + i + ":00";
-  } else {
-    option.textContent = i + ":00";
-  }
-  for (let j = 0; j < 6; j++) {
-    if (dataTurno[turnDurationMinutes].state == "inactive") {
-      // Si el turno esta inactivo, no lo muestro
-    } else {
-      const option = document.createElement("option");
-      if (i < 10) {
-        option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
-        if (j == 0) {
-          option.textContent = "0" + i + ":00";
-        } else {
-          option.textContent = "0" + i + ":" + j + "0";
-        }
-        listHours.appendChild(option);
+
+const crearListado = () => {
+  for (let i = 0; i < 24; i++) {
+    for (let j = 0; j < 6; j++) {
+      if (dataTurno[turnDurationMinutes].state == "inactive") {
+        // Si el turno esta inactivo, no lo muestro
       } else {
-        option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
-        if (j == 0) {
-          option.textContent = i + ":00";
+        const option = document.createElement("option");
+        if (i < 10) {
+          option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
+          if (j == 0) {
+            option.textContent = "0" + i + ":00";
+          } else {
+            option.textContent = "0" + i + ":" + j + "0";
+          }
+          listHours.appendChild(option);
+        } else {
+          option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
+          if (j == 0) {
+            option.textContent = i + ":00";
+          }
+          option.textContent = i + ":" + j + "0";
+          listHours.appendChild(option);
         }
-        option.textContent = i + ":" + j + "0";
-        listHours.appendChild(option);
       }
+      turnDurationMinutes++;
     }
-    turnDurationMinutes++;
   }
 }
 
@@ -184,6 +188,19 @@ const fecha = document.getElementById("fecha");
 const hora = document.getElementById("hora");
 
 fecha.addEventListener("change", () => {
+
+  if (laboratories) {
+    $.ajax({
+      url: `${turnGetUrl}/available/${labId}`,
+      headers: { "Authorization": `Bearer ${userData.token}` },
+      type: 'GET',
+      success: (response) => {
+        dataTurno = response
+        crearListado()
+      }
+    })
+  }
+
   hora.removeAttribute("disabled");
 });
 

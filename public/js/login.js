@@ -46,6 +46,7 @@ form.onsubmit = (event) => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             // save user data
             localStorage.setItem('userLoginData', xhr.responseText)
+            window.sessionStorage.setItem('userLoginData', xhr.response)
 
             // redirect user to new page
             window.location.replace(nextPageUrl)

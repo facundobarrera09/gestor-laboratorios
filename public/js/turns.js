@@ -145,7 +145,7 @@ const accessTurn = () => {
 }
 
 const createTurn = () => {
-    window.location.assign(createTurnUrlx)
+    window.location.assign(createTurnUrl)
 }
 
 if (userData) {
