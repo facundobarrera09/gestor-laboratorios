@@ -1,4 +1,6 @@
-const loginPageUrl = '/?error=expired'
+const loginPageUrl = '/'
+const createTurnUrl = '/registrarTurno.html'
+const labRedirectUrl = '/redireccion.html'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
 const turnsGetAll = 'http://localhost:3001/api/turns'
 
@@ -51,7 +53,6 @@ const updateNextTurn = () => {
         desc.innerHTML = laboratories[turn.laboratoryId].description ? laboratories[turn.laboratoryId].description : 'Sin descripción'
     }
     else {
-        console.log('no actual turn')
         container.style.display = 'none'
     }
 }
@@ -63,6 +64,13 @@ const updateTurns = () => {
 
     const turnsArray = (currentTurn && nextTurn) ? [nextTurn, ...futureTurns] : futureTurns
     // const turnsArray = turns
+
+    const listContainer = document.getElementById('all-turns-list')
+    if (listContainer) {
+        while (listContainer.firstChild) {
+            listContainer.removeChild(listContainer.lastChild)
+        }
+    }
 
     for (const turn of turnsArray) {
         const cardDiv = document.createElement('div')
@@ -113,81 +121,109 @@ const updateTurns = () => {
 }
 
 const cancelCurrentTurn = () => {
-    // empty
+    if (currentTurn) {
+        currentTurn = undefined
+        updateTurns()
+
+        // remove current turn from database
+    }
+    else if (nextTurn) {
+        nextTurn = undefined
+        updateTurns()
+
+        // remove next turn from database
+    }
 }
 
-$.ajax({
-    url: turnsGetAll,
-    headers: { "Authorization": `Bearer ${userData.token}` },
-    type: 'GET',
-    success: (response) => {
-        turns = response.reservedTurns
-
-        $.ajax({
-            url: laboratoriesGetUrl,
-            headers: { "Authorization": `Bearer ${userData.token}` },
-            type: 'GET',
-            success: (response) => {
-                for (const lab of response) {
-                    laboratories[lab.id] = lab
-                }
-
-                const now = new Date()
-                now.setHours(0)
-                now.setMinutes(0)
-                now.setSeconds(0)
-                now.setMilliseconds(0)
-
-                turns.forEach(turn => {
-                    const turnDate = new Date(turn.date)
-
-                    if (turnDate > now) {
-                        futureTurns.push(turn)
-                    }
-                    else if (turnDate < now) {
-                        pastTurns.push(turn)
-                    }
-                    else {
-                        const nowTime = new Date()
-
-                        const turnDuration = laboratories[turn.laboratoryId].turnDurationMinutes
-                        const turnDurationMs = turnDuration*60*1000
-
-                        const dateString = `${turnDate.getFullYear()}/${turnDate.getMonth()+1}/${turnDate.getDate()}`
-                        const turnTime = new Date(dateString + ' ' + getTurnTime(turnDuration, turn.turn))
-
-                        if (turnTime < nowTime) {
-                            if ((turnTime.getTime() + turnDurationMs) > nowTime.getTime()) {
-                                currentTurn = turn
-                            }
-                            else {
-                                pastTurns.push(turn)
-                            }
-                        }
-                        else if (turnTime > nowTime) {
-                            if (turnTime.getTime() < (nowTime.getTime() + turnDurationMs)) {
-                                nextTurn = turn
-                            }
-                            else {
-                                futureTurns.push(turn)
-                            }
-                        }
-                    }
-                })
-
-                // console.log('past:', pastTurns)
-                // console.log('curr:', currentTurn)
-                // console.log('next:', nextTurn)
-                // console.log('future:', futureTurns)
-
-                updateTurns()
-            }
-        })
-    },
-    error: (response) => {
-        if (response.responseText.includes('jwt expired')) {
-            localStorage.removeItem('userLoginData')
-            window.location.reload()
-        }
+const accessTurn = () => {
+    const turn = currentTurn ? currentTurn : nextTurn
+    if (turn) {
+        window.localStorage.setItem('accessedTurn', JSON.stringify(turn))
+        window.localStorage.setItem('accessedLab', JSON.stringify(laboratories[turn.laboratoryId]))
+        window.location.assign(labRedirectUrl)
     }
-})
+}
+
+const createTurn = () => {
+    window.location.assign(createTurnUrlx)
+}
+
+if (userData) {
+    $.ajax({
+        url: turnsGetAll,
+        headers: { "Authorization": `Bearer ${userData.token}` },
+        type: 'GET',
+        success: (response) => {
+            turns = response.reservedTurns
+
+            $.ajax({
+                url: laboratoriesGetUrl,
+                headers: { "Authorization": `Bearer ${userData.token}` },
+                type: 'GET',
+                success: (response) => {
+                    for (const lab of response) {
+                        laboratories[lab.id] = lab
+                    }
+
+                    const now = new Date()
+                    now.setHours(0)
+                    now.setMinutes(0)
+                    now.setSeconds(0)
+                    now.setMilliseconds(0)
+
+                    turns.forEach(turn => {
+                        const turnDate = new Date(turn.date)
+
+                        if (turnDate > now) {
+                            futureTurns.push(turn)
+                        }
+                        else if (turnDate < now) {
+                            pastTurns.push(turn)
+                        }
+                        else {
+                            const nowTime = new Date()
+
+                            const turnDuration = laboratories[turn.laboratoryId].turnDurationMinutes
+                            const turnDurationMs = turnDuration*60*1000
+
+                            const dateString = `${turnDate.getFullYear()}/${turnDate.getMonth()+1}/${turnDate.getDate()}`
+                            const turnTime = new Date(dateString + ' ' + getTurnTime(turnDuration, turn.turn))
+
+                            if (turnTime < nowTime) {
+                                if ((turnTime.getTime() + turnDurationMs) > nowTime.getTime()) {
+                                    currentTurn = turn
+                                }
+                                else {
+                                    pastTurns.push(turn)
+                                }
+                            }
+                            else if (turnTime > nowTime) {
+                                if (turnTime.getTime() < (nowTime.getTime() + turnDurationMs)) {
+                                    nextTurn = turn
+                                }
+                                else {
+                                    futureTurns.push(turn)
+                                }
+                            }
+                        }
+                    })
+
+                    // console.log('past:', pastTurns)
+                    // console.log('curr:', currentTurn)
+                    // console.log('next:', nextTurn)
+                    // console.log('future:', futureTurns)
+
+                    updateTurns()
+                }
+            })
+        },
+        error: (response) => {
+            console.log('jwt expired', response.responseText)
+            if (response.responseText.includes('jwt expired')) {
+                window.localStorage.removeItem('userLoginData')
+                window.localStorage.setItem('error', 'expired')
+                window.location.reload()
+            }
+        }
+    })
+}

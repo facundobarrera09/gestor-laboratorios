@@ -29,6 +29,9 @@ const errorHandler = (error, request, response, next) => {
     else if (error.name === 'JsonWebTokenError') {
         response.status(401).send({ error: 'jwt must be provided' })
     }
+    else if (error.name === 'TokenExpiredError') {
+        response.status(401).send({ error: 'jwt expired' })
+    }
     else if (error.name === 'Error') {
         if (error.message === 'data and salt arguments required') {
             response.status(400).send({ error: 'username, password, or role missing' })
@@ -41,6 +44,7 @@ const errorHandler = (error, request, response, next) => {
         response.status(400).send({ error: 'username already in use' })
     }
 
+    response.status(500).json({ error: 'unknown error occurred' })
     next(error)
 }
 

@@ -1,3 +1,4 @@
+
 const urlLab = "https://www.youtube.com/watch?v=QH2-TGUlwu4";
 
 let fechaCuentaRegresiva = "2023/04/30 21:48:59";
@@ -42,3 +43,9 @@ var x = setInterval(function () {
     window.location.replace(urlLab);
   }
 }, 1000);
+let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
+try {
+    if (!userData.username) {}
+} catch (e) {
+    window.location.replace(loginPageUrl)
+}

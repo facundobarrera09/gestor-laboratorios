@@ -10,8 +10,6 @@ try {
 
 
 let form = document.getElementById('login-form')
-const mySearchParams = new URLSearchParams(window.location.search)
-
 const notifyError = (error) => {
 
     // <div class="alert alert-danger" role="alert">
@@ -32,7 +30,8 @@ const notifyError = (error) => {
     }, 5000)
 }
 
-if (mySearchParams.get('error') === 'expired') {
+if (window.localStorage.getItem('error') === 'expired') {
+    window.localStorage.removeItem('error')
     notifyError('La sesión a expirado')
 }
 
