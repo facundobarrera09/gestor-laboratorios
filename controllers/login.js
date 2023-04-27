@@ -41,7 +41,7 @@ loginRouter.post('/', async (request, response) => {
     const token = jwt.sign(
         userForToken,
         config.SECRET,
-        { expiresIn: 60*60 }
+        (user.role !== 'laboratory') ? { expiresIn: 60*60 } : null
     )
 
     response.status(200).send({
