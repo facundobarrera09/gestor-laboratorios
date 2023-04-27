@@ -24,7 +24,7 @@ module.exports = {
             allowNull: false,
             validate: {
                 isValid(value) {
-                    if (!(value === 'default' || value === 'administrator')) {
+                    if (!(value === 'default' || value === 'laboratory' || value === 'administrator')) {
                         throw new Error('invalid user role')
                     }
                 }
