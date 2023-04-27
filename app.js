@@ -1,6 +1,7 @@
 const config = require('./utils/config')
 const express = require('express')
 const bcrypt = require('bcrypt')
+const cookieParser = require('cookie-parser')
 require('express-async-errors')
 
 let app
@@ -22,6 +23,7 @@ const Laboratory = orm.model('Laboratory')
 module.exports = sequelize.authenticate()
     .then(async () => {
         const loginRouter = require('./controllers/login')
+        const accessRouter = require('./controllers/access')
         const usersRouter = require('./controllers/users')
         const turnsRouter = require('./controllers/turns')
         const labRouter = require('./controllers/laboratories')
@@ -41,6 +43,11 @@ module.exports = sequelize.authenticate()
                 role: 'administrator'
             })
             await User.create({
+                username: 'laboratory1',
+                passwordHash: await bcrypt.hash('password', 10),
+                role: 'laboratory'
+            })
+            await User.create({
                 username: 'james',
                 passwordHash: await bcrypt.hash('password', 10),
                 role: 'default'
@@ -54,7 +61,7 @@ module.exports = sequelize.authenticate()
             await Laboratory.create({
                 name: 'Laboratory of geosphere',
                 turnDurationMinutes: 10,
-                ip: '192.168.100.20',
+                ip: '127.0.0.1',
                 port: '3000',
                 state: 'active'
             })
@@ -82,21 +89,21 @@ module.exports = sequelize.authenticate()
             })
             await Turn.create({
                 date: new Date(),
-                turn: 115,
+                turn: 90,
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 1
             })
             await Turn.create({
                 date: new Date(),
-                turn: 116,
+                turn: 91,
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 1
             })
             await Turn.create({
                 date: new Date(),
-                turn: 117,
+                turn: 80,
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 1
@@ -133,9 +140,11 @@ module.exports = sequelize.authenticate()
 
         app.use(express.static('public'))
         app.use(express.json())
+        app.use(cookieParser())
         app.use(middleware.requestLogger)
 
         app.use('/api/login', loginRouter)
+        app.use('/api/access', accessRouter)
         app.use('/api/users', usersRouter)
         app.use('/api/turns', turnsRouter)
         app.use('/api/laboratories', labRouter)
