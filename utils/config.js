@@ -12,8 +12,10 @@ const DB_USER = process.env.DB_USER
 const DB_PASSWORD = process.env.DB_PASSWORD
 
 const SECRET = process.env.SECRET
+const SESSION_SECRET = process.env.SESSION_SECRET
 
-const TURN_DURATION = process.env.TURN_DURATION ? process.env.TURN_DURATION : 10
+const CLIENT_ID = process.env.CLIENT_ID
+const CLIENT_SECRET = process.env.CLIENT_SECRET
 
 module.exports = {
     NODE_ENV,
@@ -23,5 +25,7 @@ module.exports = {
     DB_USER,
     DB_PASSWORD,
     SECRET,
-    TURN_DURATION
+    SESSION_SECRET,
+    CLIENT_ID,
+    CLIENT_SECRET
 }

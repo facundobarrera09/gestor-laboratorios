@@ -1,20 +1,10 @@
 const turnsRouter = require('express').Router()
-const jwt = require('jsonwebtoken')
 const config = require('../utils/config')
 
 const orm = require('../utils/model')
 const User = orm.model('User')
 const Turn = orm.model('Turn')
 const Laboratory = orm.model('Laboratory')
-
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-
-    return null
-}
 
 const checkTurnValidity = async (laboratoryId, turn) => {
     const lab = await Laboratory.findOne({ where: { id: laboratoryId } })
@@ -45,12 +35,7 @@ const getAvailableTurns = (reserverdTurns, amountOfTurns) => {
 turnsRouter.post('/', async (request, response, next) => {
     let { date, turn, accessingUserId, laboratoryId } = request.body
 
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
     if (!user) {
         throw new Error('unauthorized')
     }
@@ -121,11 +106,7 @@ turnsRouter.post('/', async (request, response, next) => {
 })
 
 turnsRouter.get('/', async (request, response) => {
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
     if (!user) {
         throw new Error('unauthorized')
     }
@@ -140,11 +121,7 @@ turnsRouter.get('/available/:labId', async (request, response) => {
     const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
     date.setHours(0,0,0,0)
 
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
     if (!user) {
         throw new Error('unauthorized')
     }
@@ -166,11 +143,7 @@ turnsRouter.get('/detailed/:labId', async (request, response) => {
     const date = request.query.date ? new Date(request.query.date.replace('-', '/')) : new Date()
     date.setHours(0,0,0,0)
 
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
     if (!user) {
         throw new Error('unauthorized')
     }

@@ -1,10 +1,12 @@
 const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
-    logger.info('Method:', request.method)
-    logger.info('Path:  ', request.path)
-    logger.info('Body:  ', request.body)
-    logger.info('---')
+    logger.info('╔═════════════')
+    logger.info('║ Method:     ', request.method)
+    logger.info('║ Path:       ', request.path)
+    logger.info('║ Body:       ', request.body)
+    logger.info('║ Authorized: ', request.session.accessToken ? true : false)
+    logger.info('╚═════════════')
     next()
 }
 
@@ -14,6 +16,8 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error.message)
+
+    if (response.writableEnded) return next()
 
     // handle errors
     // console.log(error)
@@ -45,6 +49,7 @@ const errorHandler = (error, request, response, next) => {
     }
 
     response.status(500).json({ error: 'unknown error occurred' })
+
     next(error)
 }
 

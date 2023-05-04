@@ -1,19 +1,8 @@
 const labRouter = require('express').Router()
-const jwt = require('jsonwebtoken')
-const config = require('../utils/config')
 
 const orm = require('../utils/model')
 const User = orm.model('User')
 const Laboratory = orm.model('Laboratory')
-
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-
-    return null
-}
 
 const stripLabInfo = lab => {
     return {
@@ -37,12 +26,7 @@ labRouter.post('/', async (request, response, next) => {
         status
     }
 
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
     if(user.role !== 'administrator') {
         throw new Error('unauthorized')
     }
@@ -79,12 +63,7 @@ labRouter.post('/', async (request, response, next) => {
 labRouter.get('/:states', async (request, response) => {
     const states = request.params.states.split('-')
 
-    const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'invalid token' })
-    }
-
-    const user = await User.findOne({ where: { id: decodedToken.id } })
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
 
     if (states.find(state => state === 'approval_pending')) {
         if (user.role !== 'administrator') {

@@ -4,7 +4,7 @@ const labRedirectUrl = '/redireccion.html'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
 const turnsGetAll = 'http://localhost:3001/api/turns'
 
-let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
+let userData = JSON.parse(window.sessionStorage.getItem('userLoginData'))
 try {
     if (!userData.username) {}
 } catch (e) {
@@ -151,16 +151,17 @@ const createTurn = () => {
 if (userData) {
     $.ajax({
         url: turnsGetAll,
-        headers: { "Authorization": `Bearer ${userData.token}` },
+        headers: { "Authorization": `Bearer ${userData.access_token}` },
         type: 'GET',
         success: (response) => {
             turns = response.reservedTurns
 
             $.ajax({
                 url: laboratoriesGetUrl,
-                headers: { "Authorization": `Bearer ${userData.token}` },
+                headers: { "Authorization": `Bearer ${userData.access_token}` },
                 type: 'GET',
                 success: (response) => {
+                    console.log(response.data)
                     for (const lab of response) {
                         laboratories[lab.id] = lab
                     }
@@ -214,11 +215,14 @@ if (userData) {
                     // console.log('future:', futureTurns)
 
                     updateTurns()
+                },
+                error: (response) => {
+                    console.log(response)
                 }
             })
         },
         error: (response) => {
-            console.log('jwt expired', response.responseText)
+            console.log(response)
             if (response.responseText.includes('jwt expired')) {
                 window.localStorage.removeItem('userLoginData')
                 window.localStorage.setItem('error', 'expired')

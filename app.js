@@ -1,10 +1,11 @@
 const config = require('./utils/config')
 const express = require('express')
+const session = require('express-session')
+require('express-async-errors')
 const bcrypt = require('bcrypt')
 const cookieParser = require('cookie-parser')
-require('express-async-errors')
 
-let app
+let app, oauth2
 
 // setup database
 require('./utils/model').setup('./models', config.DATABASE, config.DB_USER, config.DB_PASSWORD, {
@@ -16,6 +17,7 @@ require('./utils/model').setup('./models', config.DATABASE, config.DB_USER, conf
 const orm = require('./utils/model')
 const sequelize = orm.getSequelize()
 
+const Client = orm.model('Client')
 const User = orm.model('User')
 const Turn = orm.model('Turn')
 const Laboratory = orm.model('Laboratory')
@@ -23,15 +25,28 @@ const Laboratory = orm.model('Laboratory')
 module.exports = sequelize.authenticate()
     .then(async () => {
         const loginRouter = require('./controllers/login')
-        const accessRouter = require('./controllers/access')
         const usersRouter = require('./controllers/users')
         const turnsRouter = require('./controllers/turns')
         const labRouter = require('./controllers/laboratories')
 
         app = express()
+        oauth2 = require('./oauth/oauth20')()
+
+        oauth2.events.on('token_granted', (req, token) => {
+            if (req.originalUrl.includes('login')) {
+                logger.info('User logged in')
+            }
+            req.session.accessToken = token
+        })
+        oauth2.events.on('OAuth2Forbidden', (req, err) => {
+            if (err.code === 'forbidden') {
+                req.session.accessToken = undefined
+            }
+        })
 
         const logger = require('./utils/logger')
         const middleware = require('./utils/middleware')
+        const isAuthorized = require('./utils/isAuthorized')
 
         if (config.NODE_ENV === 'development' && process.env.RESET_DEV_DATABASE === 'true') {
             logger.info('Resetting database')
@@ -43,11 +58,6 @@ module.exports = sequelize.authenticate()
                 role: 'administrator'
             })
             await User.create({
-                username: 'laboratory1',
-                passwordHash: await bcrypt.hash('password', 10),
-                role: 'laboratory'
-            })
-            await User.create({
                 username: 'james',
                 passwordHash: await bcrypt.hash('password', 10),
                 role: 'default'
@@ -56,6 +66,28 @@ module.exports = sequelize.authenticate()
                 username: 'austin',
                 passwordHash: await bcrypt.hash('password', 10),
                 role: 'default'
+            })
+            await User.create({
+                username: 'laboratory1',
+                passwordHash: await bcrypt.hash('password', 10),
+                role: 'developer'
+            })
+
+            await Client.create({
+                id: config.CLIENT_ID,
+                name: 'Gestor de Laboratorios',
+                secret: config.CLIENT_SECRET,
+                redirectUri: 'http://localhost:3001/misTurnos.html',
+                grants: 'password',
+                scope: 'read write'
+            })
+            await Client.create({
+                id: 'laboratorio.remoto',
+                name: 'Laboratorio remoto',
+                secret: 'secreto',
+                redirectUri: 'http://127.0.0.1:3000',
+                grants: 'authorization_code',
+                scope: 'read'
             })
 
             await Laboratory.create({
@@ -138,16 +170,22 @@ module.exports = sequelize.authenticate()
             })
         }
 
+        app.use(session({ secret: config.SESSION_SECRET, resave: false, saveUninitialized: false }))
         app.use(express.static('public'))
         app.use(express.json())
+        app.use(express.urlencoded({ extended: true }))
         app.use(cookieParser())
         app.use(middleware.requestLogger)
+        app.use(oauth2.inject())
 
         app.use('/api/login', loginRouter)
-        app.use('/api/access', accessRouter)
-        app.use('/api/users', usersRouter)
-        app.use('/api/turns', turnsRouter)
-        app.use('/api/laboratories', labRouter)
+        app.use('/api/users', oauth2.middleware.bearer, usersRouter)
+        app.use('/api/turns', oauth2.middleware.bearer, turnsRouter)
+        app.use('/api/laboratories', oauth2.middleware.bearer, labRouter)
+
+        app.get('/authorization', isAuthorized, oauth2.controller.authorization)
+        app.post('/authorization', isAuthorized, oauth2.controller.authorization)
+        app.post('/token', oauth2.controller.token)
 
         app.use(middleware.unknownEndpoint)
         app.use(middleware.errorHandler)
