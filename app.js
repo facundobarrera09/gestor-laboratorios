@@ -24,6 +24,17 @@ const Laboratory = orm.model('Laboratory')
 
 module.exports = sequelize.authenticate()
     .then(async () => {
+
+        const loginRouter = require('./controllers/login')
+        const logoutRouter = require('./controllers/logout')
+        const usersRouter = require('./controllers/users')
+        const turnsRouter = require('./controllers/turns')
+        const labRouter = require('./controllers/laboratories')
+
+        const logger = require('./utils/logger')
+        const middleware = require('./utils/middleware')
+        const isAuthorized = require('./utils/isAuthorized')
+
         if (config.NODE_ENV === 'development' && process.env.RESET_DEV_DATABASE === 'true') {
             logger.info('Resetting database')
             await sequelize.sync({ force: true })
@@ -145,16 +156,6 @@ module.exports = sequelize.authenticate()
                 laboratoryId: 2
             })
         }
-
-        const loginRouter = require('./controllers/login')
-        const logoutRouter = require('./controllers/logout')
-        const usersRouter = require('./controllers/users')
-        const turnsRouter = require('./controllers/turns')
-        const labRouter = require('./controllers/laboratories')
-
-        const logger = require('./utils/logger')
-        const middleware = require('./utils/middleware')
-        const isAuthorized = require('./utils/isAuthorized')
 
         app = express()
         oauth2 = require('./oauth/oauth20')()

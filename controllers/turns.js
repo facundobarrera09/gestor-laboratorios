@@ -111,7 +111,7 @@ turnsRouter.get('/', async (request, response) => {
         throw new Error('unauthorized')
     }
 
-    let reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { accessingUserId: user.id } })
+    let reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { accessingUserId: user.id, deletedAt: null } })
 
     response.status(200).json({ reservedTurns })
 })
@@ -132,7 +132,7 @@ turnsRouter.get('/available/:labId', async (request, response) => {
     }
     const amountOfTurns = (24*60)/lab.turnDurationMinutes
 
-    const reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId } })
+    const reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId, deletedAt: null } })
     const reservedTurnsNumbers = reservedTurns.map(turn => turn.turn)
 
     response.status(200).json({ availableTurns: getAvailableTurns(reservedTurnsNumbers, amountOfTurns) })
@@ -153,12 +153,32 @@ turnsRouter.get('/detailed/:labId', async (request, response) => {
         return response.status(400).json({ error: 'laboratory does not exist' })
     }
 
-    let reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId } })
+    let reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId, deletedAt: null } })
     if (user.role === 'default') {
         reservedTurns = reservedTurns.filter(turn => turn.accessingUserId === user.id)
     }
 
     response.status(200).json({ reservedTurns })
+})
+
+turnsRouter.delete('/', async (request, response) => {
+    const { turnId } = request.body
+
+    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
+    if (!user) {
+        throw new Error('unauthorized')
+    }
+
+    const turn = await Turn.findOne({ where: { id: turnId } })
+    if (!turn) {
+        return response.status(400).json({ error: 'turn does not exist' })
+    }
+    if (turn.creatingUserId !== user.id) {
+        return response.status(403).json({ error: 'not authorized to delete turn' })
+    }
+
+    await turn.destroy()
+    response.status(200).end()
 })
 
 module.exports = turnsRouter

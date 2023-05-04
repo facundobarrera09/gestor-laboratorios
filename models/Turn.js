@@ -61,5 +61,8 @@ module.exports = {
                 }
             }
         }
-    }]
+    }],
+    options: {
+        paranoid: true
+    }
 }
