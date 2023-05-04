@@ -4,4 +4,4 @@ module.exports = {
     code:           require('./code.js'),
     refreshToken:   require('./refreshToken.js'),
     user:           require('./user.js')
-};
+}

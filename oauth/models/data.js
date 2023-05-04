@@ -31,4 +31,4 @@ module.exports = {
     codes: [],
     accessTokens: [],
     refreshTokens: []
-};
+}
