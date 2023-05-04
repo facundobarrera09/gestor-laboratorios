@@ -82,14 +82,16 @@ module.exports = sequelize.authenticate()
                 turnDurationMinutes: 10,
                 ip: '127.0.0.1',
                 port: '3000',
-                state: 'active'
+                state: 'active',
+                clientId: 'laboratorio.remoto'
             })
             await Laboratory.create({
                 name: 'Laboratory of physics',
                 turnDurationMinutes: 10,
                 ip: '192.168.100.21',
                 port: '3000',
-                state: 'active'
+                state: 'active',
+                clientId: 'laboratorio.remoto'
             })
 
             await Turn.create({

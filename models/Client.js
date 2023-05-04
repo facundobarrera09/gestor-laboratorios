@@ -34,4 +34,15 @@ module.exports = {
             type: Seq.STRING,
         }
     },
+    relations: [{
+        hasOne: {
+            model: 'Laboratory',
+            options: {
+                as: 'client',
+                foreignKey: {
+                    name: 'clientId'
+                }
+            }
+        }
+    }]
 }

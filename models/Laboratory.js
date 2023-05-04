@@ -50,6 +50,9 @@ module.exports = {
                     }
                 }
             }
+        },
+        clientId: {
+            type: Seq.STRING
         }
     },
     relations: [{
@@ -59,6 +62,17 @@ module.exports = {
                 as: 'laboratory',
                 foreignKey: {
                     name: 'laboratoryId'
+                }
+            }
+        }
+    }, {
+        belongsTo: {
+            model: 'Client',
+            options: {
+                as: 'client',
+                foreignKey: {
+                    name: 'clientId',
+                    allowNull: false
                 }
             }
         }
