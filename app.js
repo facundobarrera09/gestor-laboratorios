@@ -24,30 +24,6 @@ const Laboratory = orm.model('Laboratory')
 
 module.exports = sequelize.authenticate()
     .then(async () => {
-        const loginRouter = require('./controllers/login')
-        const usersRouter = require('./controllers/users')
-        const turnsRouter = require('./controllers/turns')
-        const labRouter = require('./controllers/laboratories')
-
-        app = express()
-        oauth2 = require('./oauth/oauth20')()
-
-        oauth2.events.on('token_granted', (req, token) => {
-            if (req.originalUrl.includes('login')) {
-                logger.info('User logged in')
-            }
-            req.session.accessToken = token
-        })
-        oauth2.events.on('OAuth2Forbidden', (req, err) => {
-            if (err.code === 'forbidden') {
-                req.session.accessToken = undefined
-            }
-        })
-
-        const logger = require('./utils/logger')
-        const middleware = require('./utils/middleware')
-        const isAuthorized = require('./utils/isAuthorized')
-
         if (config.NODE_ENV === 'development' && process.env.RESET_DEV_DATABASE === 'true') {
             logger.info('Resetting database')
             await sequelize.sync({ force: true })
@@ -170,6 +146,32 @@ module.exports = sequelize.authenticate()
             })
         }
 
+        const loginRouter = require('./controllers/login')
+        const logoutRouter = require('./controllers/logout')
+        const usersRouter = require('./controllers/users')
+        const turnsRouter = require('./controllers/turns')
+        const labRouter = require('./controllers/laboratories')
+
+        const logger = require('./utils/logger')
+        const middleware = require('./utils/middleware')
+        const isAuthorized = require('./utils/isAuthorized')
+
+        app = express()
+        oauth2 = require('./oauth/oauth20')()
+
+        oauth2.events.on('token_granted', (req, token) => {
+            if (req.originalUrl.includes('login')) {
+                logger.info('User logged in')
+            }
+            req.session.accessToken = token
+        })
+        oauth2.events.on('OAuth2Forbidden', (req, err) => {
+            if (err.code === 'forbidden') {
+                req.session.accessToken = undefined
+            }
+        })
+
+        // Middleware
         app.use(session({ secret: config.SESSION_SECRET, resave: false, saveUninitialized: false }))
         app.use(express.static('public'))
         app.use(express.json())
@@ -178,15 +180,19 @@ module.exports = sequelize.authenticate()
         app.use(middleware.requestLogger)
         app.use(oauth2.inject())
 
+        // Routers
         app.use('/api/login', loginRouter)
+        app.use('/api/logout', oauth2.middleware.bearer, logoutRouter)
         app.use('/api/users', oauth2.middleware.bearer, usersRouter)
         app.use('/api/turns', oauth2.middleware.bearer, turnsRouter)
         app.use('/api/laboratories', oauth2.middleware.bearer, labRouter)
 
+        // Oauth Provider
         app.get('/authorization', isAuthorized, oauth2.controller.authorization)
         app.post('/authorization', isAuthorized, oauth2.controller.authorization)
         app.post('/token', oauth2.controller.token)
 
+        // Middleware
         app.use(middleware.unknownEndpoint)
         app.use(middleware.errorHandler)
 

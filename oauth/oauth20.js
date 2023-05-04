@@ -43,6 +43,7 @@ module.exports = function(type) {
     obj.model.accessToken.getTTL = model.accessToken.getTTL
     obj.model.accessToken.fetchByUserIdClientId = model.accessToken.fetchByUserIdClientId
     obj.model.accessToken.create = model.accessToken.create
+    obj.model.accessToken.deleteByToken = model.accessToken.deleteByToken
 
     // Code
     obj.model.code.create = model.code.create

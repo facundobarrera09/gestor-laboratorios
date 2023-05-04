@@ -5,9 +5,7 @@ const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inacti
 const turnsGetAll = 'http://localhost:3001/api/turns'
 
 let userData = JSON.parse(window.sessionStorage.getItem('userLoginData'))
-try {
-    if (!userData.username) {}
-} catch (e) {
+if (!userData) {
     window.location.replace(loginPageUrl)
 }
 
