@@ -105,7 +105,7 @@ const listLab = () => {
 if (userData) {
   $.ajax({
     url: laboratoriesGetUrl,
-    headers: { "Authorization": `Bearer ${userData.token}` },
+    headers: { "Authorization": `Bearer ${userData.access_token}` },
     type: 'GET',
     'async': false,
     success: (response) => {

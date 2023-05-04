@@ -1,27 +1,31 @@
 const loginPostUrl = 'http://localhost:3001/api/login'
 const nextPageUrl = '/misTurnos.html'
 
-let userData = JSON.parse(window.sessionStorage.getItem('userLoginData'))
-try {
-    if (userData.username) {
-        window.location.replace(nextPageUrl)
-    }
-} catch (e) { /* empty */ }
+const params = new URLSearchParams(new URL(document.documentURI).search)
+
+let userData = loadUserLoginData()
+if (userData) {
+    window.location.replace(nextPageUrl)
+}
 
 let form = document.getElementById('login-form')
-const notifyError = (error) => {
-
-    // <div class="alert alert-danger" role="alert">
-    //     ALERT!
-    // </div>
-
+const generateAlert = (className, alertText) => {
     const div = document.createElement('div')
-    const text = document.createTextNode(error)
+    const text = document.createTextNode(alertText)
 
-    div.className = 'alert alert-danger'
+    div.className = `alert ${className}`
     div.role = 'alert'
     div.appendChild(text)
 
+    return div
+}
+const notify = (type, message) => {
+    const div = generateAlert(
+        type === 'error' ? 'alert-danger' :
+            type === 'info' ? 'alert-info' :
+                'alert-primary',
+        message
+    )
     form.insertBefore(div, form.firstChild)
 
     setTimeout(() => {
@@ -29,43 +33,52 @@ const notifyError = (error) => {
     }, 5000)
 }
 
-if (window.sessionStorage.getItem('error') === 'expired') {
-    window.localStorage.removeItem('error')
-    notifyError('La sesión a expirado')
-}
+if (window.localStorage.getItem('error') === 'expired')
+    notify('error', 'La sesión a expirado')
+else if (window.localStorage.getItem('error') === 'not found')
+    notify('error', 'El servidor cerró la sesión')
+window.localStorage.removeItem('error')
 
-const params = new URLSearchParams(new URL(document.documentURI).search)
+if (params.get('redirect')) {
+    notify('info', 'Inicia sesión para brindar autorización')
+}
 
 form.onsubmit = (event) => {
     event.preventDefault()
 
-    $.ajax({
-        url: loginPostUrl,
-        headers: { 'Content-Type': 'application/json' },
-        type: 'POST',
-        data: JSON.stringify({
-            grant_type: 'password',
-            scope: 'read write',
-            username: event.target.username.value,
-            password: event.target.password.value
-        }),
-        success: (response) => {
-            // save user data
-            sessionStorage.setItem('userLoginData', JSON.stringify(response.data))
+    userData = loadUserLoginData()
+    if (!userData) {
+        $.ajax({
+            url: loginPostUrl,
+            headers: { 'Content-Type': 'application/json' },
+            type: 'POST',
+            data: JSON.stringify({
+                grant_type: 'password',
+                scope: 'read write',
+                username: event.target.username.value,
+                password: event.target.password.value
+            }),
+            success: (response) => {
+                // save user data
+                localStorage.setItem('userLoginData', JSON.stringify(response.data))
 
-            // redirect user to new page
-            window.location.replace(params.get('redirect') || nextPageUrl)
-        },
-        error: (response) => {
-            if (response.responseText.includes('not found')) {
-                notifyError('El usuario no existe')
+                // redirect user to new page
+                window.location.replace(params.get('redirect') || nextPageUrl)
+            },
+            error: (response) => {
+                if (response.responseText.includes('not found')) {
+                    notify('error', 'El usuario no existe')
+                }
+                else if (response.responseText.includes('password')) {
+                    notify('error', 'Contraseña incorrecta')
+                }
+                else {
+                    notify('error', 'Ocurrio un error inesperado')
+                }
             }
-            else if (response.responseText.includes('password')) {
-                notifyError('Contraseña incorrecta')
-            }
-            else {
-                notifyError('Ocurrio un error inesperado')
-            }
-        }
-    })
+        })
+    }
+    else {
+        window.location.reload()
+    }
 }

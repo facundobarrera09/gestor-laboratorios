@@ -9,16 +9,20 @@ const logout = () => {
             success: (response) => {
                 localStorage.removeItem('userLoginData')
                 sessionStorage.removeItem('userLoginData')
-                window.location.reload()
+                window.location.assign('/')
             },
             error: (error) => {
                 localStorage.removeItem('userLoginData')
                 sessionStorage.removeItem('userLoginData')
-                window.location.reload()
+                window.location.assign('/')
             }
         })
     }
     else {
-        window.location.reload()
+        window.location.assign('/')
     }
+}
+
+const loadUserLoginData = () => {
+    return JSON.parse(localStorage.getItem('userLoginData'))
 }

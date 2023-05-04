@@ -4,7 +4,7 @@ const labRedirectUrl = '/redireccion.html'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
 const turnsGetAll = 'http://localhost:3001/api/turns'
 
-let userData = JSON.parse(window.sessionStorage.getItem('userLoginData'))
+let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
 if (!userData) {
     window.location.replace(loginPageUrl)
 }
@@ -220,12 +220,16 @@ if (userData) {
             })
         },
         error: (response) => {
-            console.log(response)
-            if (response.responseText.includes('jwt expired')) {
-                window.localStorage.removeItem('userLoginData')
-                window.localStorage.setItem('error', 'expired')
-                window.location.reload()
+            if (response.responseText.includes('not found')) {
+                localStorage.setItem('error', 'not found')
             }
+            else if (response.data.includes('expired')) {
+                localStorage.setItem('error', 'expired')
+            }
+            else {
+                localStorage.setItem('error', 'unknown')
+            }
+            logout()
         }
     })
 }
