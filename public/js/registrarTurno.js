@@ -3,11 +3,6 @@ const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inacti
 const turnsApiUrl = 'http://localhost:3001/api/turns'
 const turnsUrl = 'http://localhost:3001/misTurnos.html'
 
-let userData = JSON.parse(localStorage.getItem('userLoginData'))
-if (!userData) {
-    window.location.assign(loginUrl)
-}
-
 let laboratories
 
 const getTurnTime = (turnDuration, turn) => {

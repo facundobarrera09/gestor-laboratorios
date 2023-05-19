@@ -1,5 +1,11 @@
 const logoutUrl = 'http://localhost:3001/api/logout'
 
+const userData = JSON.parse(window.localStorage.getItem('userLoginData'))
+
+if (!userData && window.location.pathname !== '/') {
+    window.location.replace('/')
+}
+
 const logout = () => {
     if (userData) {
         $.ajax({
@@ -28,7 +34,6 @@ const loadUserLoginData = () => {
 }
 
 const generateAlert = (className, alertText) => {
-    console.log('generating:', className, alertText)
     const div = document.createElement('div')
     const text = document.createTextNode(alertText)
 
@@ -42,7 +47,6 @@ const createNotification = (type, message) => {
     const notificationField = document.getElementById('notification')
 
     if (notificationField) {
-        console.log('notificating:', type, ' ', message)
 
         const div = generateAlert(
             type === 'error' ? 'alert-danger' :
@@ -63,8 +67,6 @@ const createNotification = (type, message) => {
 const notify = async () => {
     const info = localStorage.getItem('notify')
     const error = localStorage.getItem('error')
-
-    console.log(info, error)
 
     localStorage.removeItem('notify')
     localStorage.removeItem('error')

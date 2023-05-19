@@ -1,9 +1,3 @@
-const userData = JSON.parse(window.localStorage.getItem('userLoginData'))
-
-if (!userData) {
-    window.location.assign('/')
-}
-
 const laboratorio = JSON.parse(localStorage.getItem('accessedLab'))
 const turno = JSON.parse(localStorage.getItem('accessedTurn'))
 

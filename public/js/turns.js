@@ -1,13 +1,7 @@
-const loginPageUrl = '/'
 const createTurnUrl = '/registrarTurno.html'
 const labRedirectUrl = '/redireccion.html'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
 const turnsGetAll = 'http://localhost:3001/api/turns'
-
-let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
-if (!userData) {
-    window.location.replace(loginPageUrl)
-}
 
 let turns = []
 let pastTurns = []
@@ -174,7 +168,6 @@ if (userData) {
                 headers: { 'Authorization': `Bearer ${userData.access_token}` },
                 type: 'GET',
                 success: (response) => {
-                    console.log(response.data)
                     for (const lab of response) {
                         laboratories[lab.id] = lab
                     }

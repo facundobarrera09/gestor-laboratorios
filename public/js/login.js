@@ -3,7 +3,6 @@ const nextPageUrl = '/misTurnos.html'
 
 const params = new URLSearchParams(new URL(document.documentURI).search)
 
-let userData = loadUserLoginData()
 if (userData) {
     window.location.replace(nextPageUrl)
 }
@@ -12,7 +11,6 @@ const form = document.getElementById('login-form')
 form.onsubmit = (event) => {
     event.preventDefault()
 
-    userData = loadUserLoginData()
     if (!userData) {
         $.ajax({
             url: loginPostUrl,
