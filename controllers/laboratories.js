@@ -60,6 +60,17 @@ labRouter.post('/', async (request, response, next) => {
 
 })
 
+labRouter.get('/', async (request, response) => {
+    const laboratory = await Laboratory.findOne({ attributes: ['id', 'name', 'turnDurationMinutes', 'state'], where: { clientId: request.oauth2.accessToken.clientId } })
+
+    if (laboratory) {
+        return response.status(200).json(laboratory)
+    }
+    else {
+        return response.status(400).json({ error: 'associated laboratory not found' })
+    }
+})
+
 labRouter.get('/:states', async (request, response) => {
     const states = request.params.states.split('-')
 
