@@ -1,51 +1,51 @@
+const userData = JSON.parse(window.localStorage.getItem('userLoginData'))
 
-const urlLab = "https://www.youtube.com/watch?v=QH2-TGUlwu4";
-
-let fechaCuentaRegresiva = "2023/04/30 21:48:59";
-let cuentaRegresiva = new Date(fechaCuentaRegresiva).getTime();
-
-var x = setInterval(function () {
-  var ahora = new Date().getTime();
-  var distancia = cuentaRegresiva - ahora;
-  var dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
-  var horas = Math.floor(
-    (distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-  );
-  var minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
-  var segundos = Math.floor((distancia % (1000 * 60)) / 1000);
-  console.log(distancia);
-  if (dias < 10) {
-    dias = "0" + dias;
-  }
-  if (minutos < 10) {
-    minutos = "0" + minutos;
-  }
-  if (horas < 10) {
-    horas = "0" + horas;
-  }
-  if (segundos < 10) {
-    segundos = "0" + segundos;
-  }
-  if (dias > 10 && minutos > 10 && horas > 10 && segundos > 10) {
-    document.getElementById("fecha").innerHTML =
-      dias + ":" + horas + ":" + minutos + ":" + segundos;
-  } else {
-    document.getElementById("fecha").innerHTML =
-      dias + ":" + horas + ":" + minutos + ":" + segundos;
-  }
-  if (distancia < 0) {
-    clearInterval(x);
-    document.getElementById("reloj").innerHTML =
-      '<p class="container-text-center" style="font-size: 18px;">' +
-      "Redireccionando..." +
-      "</p>";
-    document.getElementById("fecha").innerHTML = "";
-    window.location.replace(urlLab);
-  }
-}, 1000);
-let userData = JSON.parse(window.localStorage.getItem('userLoginData'))
-try {
-    if (!userData.username) {}
-} catch (e) {
-    window.location.replace(loginPageUrl)
+if (!userData) {
+    window.location.assign('/')
 }
+
+const laboratorio = JSON.parse(localStorage.getItem('accessedLab'))
+const turno = JSON.parse(localStorage.getItem('accessedTurn'))
+
+if (!laboratorio || !turno) {
+    window.location.assign('/misTurnos.html')
+}
+
+const getTurnTime = (turnDuration, turn) => {
+    const startingTimeMinutes = turn*turnDuration
+
+    const hours = Math.floor(startingTimeMinutes / 60)
+    const minutes = startingTimeMinutes % 60
+
+    const date = new Date()
+    date.setHours(hours)
+    date.setMinutes(minutes)
+    date.setSeconds(0)
+
+    return date.toTimeString().slice(0,5)
+}
+
+turno.date = new Date(turno.date)
+const fechaString = `${turno.date.getFullYear()}/${turno.date.getMonth()+1}/${turno.date.getDate()}`
+const fechaTurno = new Date(`${fechaString} ${getTurnTime(laboratorio.turnDurationMinutes, turno.turn)}`)
+
+var contador = setInterval(async () => {
+    const ahora = new Date()
+    const distancia = fechaTurno.getTime() - ahora.getTime()
+
+    console.log(fechaTurno, ahora)
+    console.log(fechaTurno.getTime(), ahora.getTime())
+    console.log(distancia)
+    if (distancia > 0) {
+        document.getElementById('reloj').innerText = new Date(distancia).toTimeString().slice(3,8)
+    }
+    else {
+        clearInterval(contador)
+
+        document.getElementById('title').innerText = 'Redireccionando...'
+        document.getElementById('reloj').innerText = '00:00'
+
+        await new Promise(r => setTimeout(r, 1000))
+        window.location.replace(`http://${laboratorio.ip}:${laboratorio.port}`)
+    }
+}, 1000)
