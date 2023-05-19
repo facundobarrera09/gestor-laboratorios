@@ -8,41 +8,7 @@ if (userData) {
     window.location.replace(nextPageUrl)
 }
 
-let form = document.getElementById('login-form')
-const generateAlert = (className, alertText) => {
-    const div = document.createElement('div')
-    const text = document.createTextNode(alertText)
-
-    div.className = `alert ${className}`
-    div.role = 'alert'
-    div.appendChild(text)
-
-    return div
-}
-const notify = (type, message) => {
-    const div = generateAlert(
-        type === 'error' ? 'alert-danger' :
-            type === 'info' ? 'alert-info' :
-                'alert-primary',
-        message
-    )
-    form.insertBefore(div, form.firstChild)
-
-    setTimeout(() => {
-        div.remove()
-    }, 5000)
-}
-
-if (window.localStorage.getItem('error') === 'expired')
-    notify('error', 'La sesión a expirado')
-else if (window.localStorage.getItem('error') === 'not found')
-    notify('error', 'El servidor cerró la sesión')
-window.localStorage.removeItem('error')
-
-if (params.get('redirect')) {
-    notify('info', 'Inicia sesión para brindar autorización')
-}
-
+const form = document.getElementById('login-form')
 form.onsubmit = (event) => {
     event.preventDefault()
 

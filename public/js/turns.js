@@ -18,7 +18,7 @@ let futureTurns = []
 let laboratories = {}
 
 const getTurnTime = (turnDuration, turn) => {
-    const startingTimeMinutes = (turn-1)*turnDuration
+    const startingTimeMinutes = turn*turnDuration
 
     const hours = Math.floor(startingTimeMinutes / 60)
     const minutes = startingTimeMinutes % 60
@@ -111,25 +111,40 @@ const updateTurns = () => {
         else {
             col2Div.appendChild(element)
         }
-        position++;
+        position++
     }
 
     document.getElementById('all-turns-list').appendChild(col1Div)
     document.getElementById('all-turns-list').appendChild(col2Div)
 }
 
+const deleteTurn = (turn) => {
+    $.ajax({
+        url: turnsGetAll,
+        headers: { 'Authorization': `Bearer ${userData.access_token}`, 'Content-Type': 'application/json' },
+        type: 'DELETE',
+        data: JSON.stringify({
+            turnId: turn.id
+        }),
+        success: () => {
+            console.log('turn deleted')
+        },
+        error: (error) => {
+            console.log(error)
+        }
+    })
+}
+
 const cancelCurrentTurn = () => {
     if (currentTurn) {
+        deleteTurn(currentTurn)
         currentTurn = undefined
         updateTurns()
-
-        // remove current turn from database
     }
     else if (nextTurn) {
+        deleteTurn(nextTurn)
         nextTurn = undefined
         updateTurns()
-
-        // remove next turn from database
     }
 }
 
@@ -149,14 +164,14 @@ const createTurn = () => {
 if (userData) {
     $.ajax({
         url: turnsGetAll,
-        headers: { "Authorization": `Bearer ${userData.access_token}` },
+        headers: { 'Authorization': `Bearer ${userData.access_token}` },
         type: 'GET',
         success: (response) => {
             turns = response.reservedTurns
 
             $.ajax({
                 url: laboratoriesGetUrl,
-                headers: { "Authorization": `Bearer ${userData.access_token}` },
+                headers: { 'Authorization': `Bearer ${userData.access_token}` },
                 type: 'GET',
                 success: (response) => {
                     console.log(response.data)
@@ -221,13 +236,13 @@ if (userData) {
         },
         error: (response) => {
             if (response.responseText.includes('not found')) {
-                localStorage.setItem('error', 'not found')
+                localStorage.setItem('error', 'El servidor cerró la sesión')
             }
             else if (response.data.includes('expired')) {
-                localStorage.setItem('error', 'expired')
+                localStorage.setItem('error', 'La sesión a expirado')
             }
             else {
-                localStorage.setItem('error', 'unknown')
+                localStorage.setItem('notify', 'Inicia sesión para brindar autorización')
             }
             logout()
         }

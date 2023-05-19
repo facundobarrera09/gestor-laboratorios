@@ -148,7 +148,7 @@ document.getElementById('new-turn').onsubmit = (event) => {
                 type: 'POST',
                 data: JSON.stringify(newTurn),
                 success: () => {
-                    localStorage.setItem('notify', 'turnCreated')
+                    localStorage.setItem('notify', 'El turno fue creado con éxito')
                     window.location.assign(turnsUrl)
                 },
                 error: (error) => {
