@@ -11,6 +11,9 @@ if (!laboratorio || !turno) {
     window.location.assign('/misTurnos.html')
 }
 
+localStorage.removeItem('accessedLab')
+localStorage.removeItem('accessedTurn')
+
 const getTurnTime = (turnDuration, turn) => {
     const startingTimeMinutes = turn*turnDuration
 
