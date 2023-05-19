@@ -7,7 +7,7 @@ const orm = require('../utils/model')
 const User = orm.model('User')
 
 loginRouter.post('/', async (request, response) => {
-    const userId = await User.findOne({ where: { username: request.body.username } }).id
+    const userId = (request.body.username) ? await User.findOne({ where: { username: request.body.username } }).id : null
     request.oauth2.model.accessToken.fetchByUserIdClientId(userId, config.CLIENT_ID, (err, accessToken) => {
         if (accessToken) {
             console.log('found accessToken')

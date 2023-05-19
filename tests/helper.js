@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken')
 const config = require('../utils/config')
 
 const orm = require('../utils/model')
@@ -31,28 +30,21 @@ const laboratoriesInDb = async (raw) => {
     return allLabs
 }
 
-const loginAs = async (username) => {
-    const user = await User.findOne({ where: { username } })
-
-    if (!user) {
-        throw new Error('user does not exist')
-    }
-
-    const userForToken = {
-        id: user.id,
-        username: user.username,
-    }
-
-    const token = jwt.sign(
-        userForToken,
-        config.SECRET,
-        { expiresIn: 60*60 }
-    )
+const loginAs = async (api, username, password) => {
+    const loginData = await api
+        .post('/api/login')
+        .send({
+            grant_type: 'password',
+            scope: 'read write',
+            username,
+            password
+        })
+        .set('Content-Type', 'application/json')
 
     return {
-        id: user.id,
-        username: user.username,
-        token
+        username,
+        password,
+        token: loginData.body.data.access_token
     }
 }
 
