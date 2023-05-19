@@ -11,7 +11,6 @@ beforeAll(async () => {
     User = orm.model('User')
 
     helper = require('./helper')
-    await helper.syncDatabase()
 })
 
 describe('when there is initially three users in the database', () => {
@@ -39,13 +38,13 @@ describe('when there is initially three users in the database', () => {
         test('user succeeds with valid data', async () => {
             const usersAtStart = await helper.usersInDb()
 
+            const user = await helper.loginAs(api, 'facundo', 'password')
+
             const newUserData = {
                 username: 'ramiro',
                 password: 'password',
                 role: 'default'
             }
-
-            const user = await helper.loginAs('facundo')
 
             const response = await api
                 .post('/api/users')
@@ -66,7 +65,7 @@ describe('when there is initially three users in the database', () => {
         test('fails if user is not authorized', async () => {
             const usersAtStart = await helper.usersInDb()
 
-            const user = await helper.loginAs('james')
+            const user = await helper.loginAs(api, 'james', 'password')
 
             const newUserData = {
                 username: 'ramiro',
@@ -99,19 +98,19 @@ describe('when there is initially three users in the database', () => {
             const response = await api
                 .post('/api/users')
                 .send(newUserData)
-                .expect(401)
+                .expect(403)
 
             const error = response.body.error
             const usersAtEnd = await helper.usersInDb()
 
             expect(usersAtStart).toEqual(usersAtEnd)
-            expect(error).toEqual('jwt must be provided')
+            expect(error).toEqual('access_denied')
         })
 
         test('fails with missing data', async () => {
             const usersAtStart = await helper.usersInDb()
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/users')
@@ -133,7 +132,7 @@ describe('when there is initially three users in the database', () => {
                 username: 'latar',
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             await api
                 .post('/api/users')
@@ -155,7 +154,7 @@ describe('when there is initially three users in the database', () => {
                 role: 'default'
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/users')
