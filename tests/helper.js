@@ -1,5 +1,3 @@
-const config = require('../utils/config')
-
 const orm = require('../utils/model')
 const User = orm.model('User')
 const Turn = orm.model('Turn')
