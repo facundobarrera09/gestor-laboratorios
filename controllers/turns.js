@@ -6,13 +6,24 @@ const User = orm.model('User')
 const Turn = orm.model('Turn')
 const Laboratory = orm.model('Laboratory')
 
-const checkTurnValidity = async (laboratoryId, turn) => {
+const getTimeTurn = (turnDuration, hour) => {
+    return Math.floor((hour.getTime()/(1000*60)) / turnDuration)
+}
+
+const checkTurnValidity = async (laboratoryId, date, number) => {
     const lab = await Laboratory.findOne({ where: { id: laboratoryId } })
-    const turnDurationMinutes = lab.turnDurationMinutes
+    const turnDuration = lab.turnDurationMinutes
 
-    const allTurns = (24*60) / turnDurationMinutes
+    const today = new Date()
+    today.setHours(0,0,0,0)
 
-    return (turn <= allTurns && turn > 0)
+    const now = new Date()
+    const hour = new Date(now.getTime() - today.getTime())
+    const currentTurn = getTimeTurn(turnDuration, hour)
+
+    const allTurns = (24*60) / turnDuration
+
+    return (number < allTurns && number >= (today.getTime() === date.getTime() ? currentTurn : 0))
 }
 
 const checkTurnAvailability = async (laboratoryId, date, turn) => {
@@ -20,12 +31,23 @@ const checkTurnAvailability = async (laboratoryId, date, turn) => {
     return (reservedTurn) ? false : true
 }
 
-const getAvailableTurns = (reserverdTurns, amountOfTurns) => {
+const getAvailableTurns = (date, reserverdTurns, turnDuration) => {
+    const maxAvailableTurns = (24*60)/turnDuration
+
+    const today = new Date()
+    today.setHours(0,0,0,0)
+
+    const now = new Date()
+    const hour = new Date(now.getTime() - today.getTime())
+    const currentTurn = getTimeTurn(turnDuration, hour)
+
     let availableTurns = []
 
-    for (let x = 1; x <= amountOfTurns; x++) {
-        if (!reserverdTurns.find(turn => turn === x)) {
-            availableTurns.push(x)
+    if (date >= today) {
+        for (let x = (today.getTime() === date.getTime()) ? currentTurn : 0; x < maxAvailableTurns; x++) {
+            if (!reserverdTurns.find(turn => turn === x)) {
+                availableTurns.push(x)
+            }
         }
     }
 
@@ -63,12 +85,12 @@ turnsRouter.post('/', async (request, response, next) => {
 
     for (const attribute in newTurnData) {
         if (newTurnData[attribute] === undefined) {
-            response.status(400).json({ error: 'begin date; end date; accessing user; or laboratory id missing' })
+            response.status(400).json({ error: 'date; turn; or laboratory id missing' })
             return
         }
     }
 
-    const isTurnValid = await checkTurnValidity(laboratoryId, turn)
+    const isTurnValid = await checkTurnValidity(laboratoryId, date, turn)
     if (!(isTurnValid)) {
         response.status(400).json({ error : 'turn does not exist' })
         return
@@ -106,12 +128,36 @@ turnsRouter.post('/', async (request, response, next) => {
 })
 
 turnsRouter.get('/', async (request, response) => {
-    const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
-    if (!user) {
-        throw new Error('unauthorized')
+    let date = request.query.date
+    try {
+        date = new Date(`${date.replaceAll('-','/')} 00:00:00`)
+    }
+    catch {
+        date = null
     }
 
-    let reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where: { accessingUserId: user.id, deletedAt: null } })
+    let reservedTurns
+
+    let where = {
+        deletedAt: null
+    }
+    if (date)
+        where.date = date
+
+    if (request.session.accessToken) {
+        const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
+        if (!user) {
+            throw new Error('unauthorized')
+        }
+
+        where.accessingUserId = user.id
+        reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where })
+    }
+    else {
+        const lab = await Laboratory.findOne({ where: { clientId: request.oauth2.accessToken.clientId } })
+        where.laboratoryId = lab.id
+        reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where })
+    }
 
     response.status(200).json({ reservedTurns })
 })
@@ -130,12 +176,11 @@ turnsRouter.get('/available/:labId', async (request, response) => {
     if (!lab) {
         return response.status(400).json({ error: 'laboratory does not exist' })
     }
-    const amountOfTurns = (24*60)/lab.turnDurationMinutes
 
     const reservedTurns = await Turn.findAll({ where: { date, laboratoryId: labId, deletedAt: null } })
     const reservedTurnsNumbers = reservedTurns.map(turn => turn.turn)
 
-    response.status(200).json({ availableTurns: getAvailableTurns(reservedTurnsNumbers, amountOfTurns) })
+    response.status(200).json({ laboratoryId: labId, date, availableTurns: getAvailableTurns(date, reservedTurnsNumbers, lab.turnDurationMinutes) })
 })
 
 turnsRouter.get('/detailed/:labId', async (request, response) => {
