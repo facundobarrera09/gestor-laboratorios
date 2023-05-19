@@ -12,8 +12,8 @@ beforeAll(async () => {
     Laboratory = orm.model('Laboratory')
 
     helper = require('./helper')
-    await helper.syncDatabase()
 
+    await helper.truncateTables(['User'])
     await User.create({
         username: 'facundo',
         passwordHash: await bcrypt.hash('password', 10),
@@ -44,7 +44,7 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             await api
                 .post('/api/laboratories')
@@ -70,7 +70,7 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/laboratories')
@@ -96,7 +96,7 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/laboratories')
@@ -122,7 +122,7 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/laboratories')
@@ -148,7 +148,7 @@ describe('when there is initially no laboratories in the database', () => {
                 state: 'active'
             }
 
-            const user = await helper.loginAs('james')
+            const user = await helper.loginAs(api, 'james', 'password')
 
             const response = await api
                 .post('/api/laboratories')
@@ -176,18 +176,19 @@ describe('when there is initially no laboratories in the database', () => {
             const response = await api
                 .post('/api/laboratories')
                 .send(newLabData)
-                .expect(401)
+                .expect(403)
 
             const labsAtEnd = await helper.laboratoriesInDb()
+            const error = response.body.error_description
 
             expect(labsAtEnd).toEqual(labsAtStart)
-            expect(response.text).toContain('jwt must be provided')
+            expect(error).toContain('Bearer token not found')
         })
 
         test('fails if there is missing data', async () => {
             const labsAtStart = await helper.laboratoriesInDb()
 
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const response = await api
                 .post('/api/laboratories')
@@ -241,7 +242,7 @@ describe('when there are some laboratories in the database', () => {
 
     describe('viewing of laboratories', () => {
         test('all users can see active and inactive laboratories', async () => {
-            const user = await helper.loginAs('james')
+            const user = await helper.loginAs(api, 'james', 'password')
 
             const labsInDb = await helper.laboratoriesInDb()
             const activeAndInactiveLabs = labsInDb.filter(lab => (lab.state === 'active' || lab.state === 'inactive'))
@@ -260,7 +261,7 @@ describe('when there are some laboratories in the database', () => {
         })
 
         test('administrators can see approval pending laboratories', async () => {
-            const user = await helper.loginAs('facundo')
+            const user = await helper.loginAs(api, 'facundo', 'password')
 
             const labsInDb = await helper.laboratoriesInDb()
             const approvalPendingLabs = labsInDb.filter(lab => lab.state === 'approval_pending')
@@ -279,7 +280,7 @@ describe('when there are some laboratories in the database', () => {
         })
 
         test('default users can not see approval pending laboratories', async () => {
-            const user = await helper.loginAs('james')
+            const user = await helper.loginAs(api, 'james', 'password')
 
             const response = await api
                 .get('/api/laboratories/approval_pending')
