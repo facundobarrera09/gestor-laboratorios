@@ -1,222 +1,179 @@
+const loginUrl = 'http://localhost:3001/'
+const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
+const turnsApiUrl = 'http://localhost:3001/api/turns'
+const turnsUrl = 'http://localhost:3001/misTurnos.html'
 
 let userData = JSON.parse(localStorage.getItem('userLoginData'))
-
-const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
-const turnGetUrl = 'http://localhost:3001/api/turns'
+if (!userData) {
+    window.location.assign(loginUrl)
+}
 
 let laboratories
 
-// carousel
-const carousel = document.getElementById("carouselExampleIndicators");
+const getTurnTime = (turnDuration, turn) => {
+    const startingTimeMinutes = turn*turnDuration
 
-const buttonPrevNext = () => {
-  // Button Prev
-  let buttonPrev = document.createElement("button");
-  buttonPrev.classList.add("carousel-control-prev");
-  buttonPrev.setAttribute("type", "button");
-  buttonPrev.setAttribute("data-bs-target", "#carouselExampleIndicators");
-  buttonPrev.setAttribute("data-bs-slide", "prev");
+    const hours = Math.floor(startingTimeMinutes / 60)
+    const minutes = startingTimeMinutes % 60
 
-  let iconPrev = document.createElement("span");
-  iconPrev.classList.add("carousel-control-prev-icon");
-  iconPrev.setAttribute("aria-hidden", "true");
+    const date = new Date()
+    date.setHours(hours)
+    date.setMinutes(minutes)
+    date.setSeconds(0)
 
-  let labelPrev = document.createElement("span");
-  labelPrev.classList.add("visually-hidden");
-  labelPrev.textContent = "Previous";
-
-  buttonPrev.appendChild(iconPrev);
-  buttonPrev.appendChild(labelPrev);
-
-  // Button Next
-
-  let buttonNext = document.createElement("button");
-  buttonNext.classList.add("carousel-control-next");
-  buttonNext.setAttribute("type", "button");
-  buttonNext.setAttribute("data-bs-target", "#carouselExampleIndicators");
-  buttonNext.setAttribute("data-bs-slide", "next");
-
-  let iconNext = document.createElement("span");
-  iconNext.classList.add("carousel-control-next-icon");
-  iconNext.setAttribute("aria-hidden", "true");
-
-  let labelNext = document.createElement("span");
-  labelNext.classList.add("visually-hidden");
-  labelNext.textContent = "Next";
-
-  buttonNext.appendChild(iconNext);
-  buttonNext.appendChild(labelNext);
-
-  carousel.appendChild(buttonPrev);
-  carousel.appendChild(buttonNext);
-};
-
-const buttonCarusel = () => {
-  buttonPrevNext();
-  for (let i = 0; i < laboratories.length; i++) {
-    let parseI = i.toString();
-    const carouselIndicators = document.getElementById("carousel-Indicators");
-    let button = document.createElement("button");
-    button.setAttribute("type", "button");
-    button.setAttribute("data-bs-target", "#carouselExampleIndicators");
-    button.setAttribute("data-bs-slide-to", parseI);
-    if (i == 0) {
-      button.classList.add("active");
-      button.setAttribute("aria-current", "true");
-    }
-    button.setAttribute("aria-label", "Slide " + parseI);
-    carouselIndicators.appendChild(button);
-  }
-};
-
-const listLab = () => {
-  buttonCarusel();
-  for (let i = 0; i < laboratories.length; i++) {
-    const CarouselCuerpo = document.getElementById("carousel-cuerpo");
-    const carouselItem = document.createElement("div");
-    const cardDiv = document.createElement("div");
-    const cardBody = document.createElement("div");
-    const cardTitle = document.createElement("h5");
-    const cardDescription = document.createElement("p");
-
-    // Styles
-    if (i == 0) {
-      carouselItem.className = "carousel-item active";
-    } else {
-      carouselItem.className = "carousel-item";
-    }
-
-    cardDiv.className = "card text-center border-primary mb-3 w-100 h-100";
-    cardBody.className = "card-body";
-    cardTitle.className = "card-title";
-    cardDescription.className = "card-text";
-
-    // Data
-    cardTitle.innerText = laboratories[i].name;
-    cardDescription.innerText = laboratories[i].description;
-    CarouselCuerpo.appendChild(carouselItem);
-    carouselItem.appendChild(cardDiv);
-    cardDiv.appendChild(cardBody);
-    cardBody.appendChild(cardTitle);
-    cardBody.appendChild(cardDescription);
-  }
-};
-
-if (userData) {
-  $.ajax({
-    url: laboratoriesGetUrl,
-    headers: { "Authorization": `Bearer ${userData.access_token}` },
-    type: 'GET',
-    'async': false,
-    success: (response) => {
-      laboratories = response
-      listLab();
-    },
-    error: (error) => {
-      console.log(error)
-    }
-  })
+    return date.toTimeString().slice(0,5)
 }
 
-// Data de prueba para los turnos
-
-// Teniendo en cuenta que me van a enviar un numero por cada horario, siendo 0 -> 00:00 y 1 -> 00:10
-let dataTurno = [];
-
-if (userData) {
+const obtenerLabSeleccionado = () => {
+    const carouselActivo = document.querySelector('.carousel-item.active')
+    return laboratories.find((lab) => lab.id === Number.parseInt(carouselActivo.id))
 }
 
-const generarDatosTurno = () => {
-  for (let i = 0; i < 144; i++) {
-    let dataObject = {};
-    if (i == 4) {
-      dataObject = {
-        name: "Laboratorio de Prueba1",
-        turnDurationMinutes: i.toString(),
-        state: "inactive",
-        date: "2021-10-10",
-      };
-    } else {
-      dataObject = {
-        name: "Laboratorio de Prueba1",
-        turnDurationMinutes: i.toString(),
-        state: "active",
-        date: "2021-10-10",
-      };
-    }
-
-    dataTurno.push(dataObject);
-  }
-}
-
-console.log(dataTurno);
-
-const listHours = document.getElementById("hora");
-let turnDurationMinutes = 0;
-
-const crearListado = () => {
-  for (let i = 0; i < 24; i++) {
-    for (let j = 0; j < 6; j++) {
-      if (dataTurno[turnDurationMinutes].state == "inactive") {
-        // Si el turno esta inactivo, no lo muestro
-      } else {
-        const option = document.createElement("option");
-        if (i < 10) {
-          option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
-          if (j == 0) {
-            option.textContent = "0" + i + ":00";
-          } else {
-            option.textContent = "0" + i + ":" + j + "0";
-          }
-          listHours.appendChild(option);
-        } else {
-          option.value = turnDurationMinutes; // Cambio el valor de la opcion para que sea el mismo que el de la data
-          if (j == 0) {
-            option.textContent = i + ":00";
-          }
-          option.textContent = i + ":" + j + "0";
-          listHours.appendChild(option);
-        }
-      }
-      turnDurationMinutes++;
-    }
-  }
-}
+let turnos = []
 
 // Seleccionar fecha y hora.
-const fecha = document.getElementById("fecha");
-const hora = document.getElementById("hora");
+const fecha = document.getElementById('fecha')
+const hora = document.getElementById('hora')
 
-fecha.addEventListener("change", () => {
+fecha.setAttribute('value', new Date().toISOString().slice(0,10))
 
-  if (laboratories) {
+const crearListadoTurnos = () => {
+    const laboratorioSeleccionado = obtenerLabSeleccionado()
+
+    while (hora.firstChild) {
+        hora.removeChild(hora.lastChild)
+    }
+
+    const noOption = document.createElement('option')
+    noOption.value = ''
+    noOption.innerHTML = 'Seleccionar hora'
+    hora.appendChild(noOption)
+
+    for (let i of turnos.availableTurns) {
+        const option = document.createElement('option')
+        option.value = i
+        option.innerHTML = getTurnTime(laboratorioSeleccionado.turnDurationMinutes, i)
+        hora.appendChild(option)
+    }
+}
+
+const actualizarListadoTurnos = () => {
+    const lab = obtenerLabSeleccionado()
+    const date = fecha.value
+
+    hora.disabled = (date === '') ? true : false
+
+    if (!lab)
+        return
+
+    if (laboratories) {
+        $.ajax({
+            url: `${turnsApiUrl}/available/${obtenerLabSeleccionado().id}?date=${date}`,
+            headers: { 'Authorization': `Bearer ${userData.access_token}` },
+            type: 'GET',
+            success: (response) => {
+                turnos = response
+                crearListadoTurnos()
+            }
+        })
+    }
+}
+
+fecha.addEventListener('change', () => {
+    actualizarListadoTurnos()
+})
+
+const listLab = () => {
+    for (let i = 0; i < laboratories.length; i++) {
+        const carouselCuerpo = document.getElementById('carousel-cuerpo')
+        const carouselItem = document.createElement('div')
+        const cardDiv = document.createElement('div')
+        const cardBody = document.createElement('div')
+        const cardTitle = document.createElement('h5')
+        const cardDescription = document.createElement('p')
+
+        // Styles
+        if (i === 0) {
+            carouselItem.className = 'carousel-item active'
+        } else {
+            carouselItem.className = 'carousel-item'
+        }
+
+        carouselItem.id = laboratories[i].id
+        carouselItem.setAttribute('data-interval', 'false')
+        cardDiv.className = 'card text-center border-primary w-100 h-100'
+        cardBody.className = 'card-body'
+        cardTitle.className = 'card-title'
+        cardDescription.className = 'card-text'
+
+        // Data
+        cardTitle.innerText = laboratories[i].name
+        cardDescription.innerText = laboratories[i].description
+        carouselCuerpo.appendChild(carouselItem)
+        carouselItem.appendChild(cardDiv)
+        cardDiv.appendChild(cardBody)
+        cardBody.appendChild(cardTitle)
+        cardBody.appendChild(cardDescription)
+    }
+}
+
+$('#laboratoriesCarousel').on('slid.bs.carousel', actualizarListadoTurnos)
+window.onload = () => {
+    $('#laboratoriesCarousel').carousel('pause')
+}
+
+document.getElementById('new-turn').onsubmit = (event) => {
+    event.preventDefault()
+
+    const date = new Date(`${fecha.value} 00:00:00`)
+    const turn = Number.parseInt(hora.value)
+    const laboratoryId = obtenerLabSeleccionado().id
+
+    if (fecha.value === '' || hora.value === '') {
+        alert('Debe seleccionar una fecha y hora')
+    } else {
+        const newTurn = {
+            date,
+            turn,
+            laboratoryId
+        }
+
+        if (userData) {
+            $.ajax({
+                url: turnsApiUrl,
+                headers: {
+                    'Authorization': `Bearer ${userData.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                type: 'POST',
+                data: JSON.stringify(newTurn),
+                success: () => {
+                    localStorage.setItem('notify', 'turnCreated')
+                    window.location.assign(turnsUrl)
+                },
+                error: (error) => {
+                    console.log(error)
+                }
+            })
+        }
+        else {
+            window.location.assign(loginUrl)
+        }
+    }
+}
+
+if (userData) {
     $.ajax({
-      url: `${turnGetUrl}/available/${labId}`,
-      headers: { "Authorization": `Bearer ${userData.token}` },
-      type: 'GET',
-      success: (response) => {
-        dataTurno = response
-        crearListado()
-      }
+        url: laboratoriesGetUrl,
+        headers: { 'Authorization': `Bearer ${userData.access_token}` },
+        type: 'GET',
+        success: (response) => {
+            laboratories = response
+            listLab()
+            actualizarListadoTurnos()
+        },
+        error: (error) => {
+            console.log(error)
+        }
     })
-  }
-
-  hora.removeAttribute("disabled");
-});
-
-// Registrar turno
-const registrarTurno = document.getElementById("registrarTurno");
-// Obtenemos el carousel activo
-const carouselActivo = document.querySelector(".active");
-let carouselSeleccionado = carouselActivo.getAttribute("aria-label");
-// Tener en cuenta que el slide 0 pertenece al lab 1, el slide 1 al lab 2, etc.
-
-registrarTurno.addEventListener("click", () => {
-  if (fecha.value == "" || hora.value == "") {
-    alert("Debe seleccionar una fecha y hora");
-  } else {
-    alert("El valor de la fecha es " + fecha.value);
-    alert("El valor de la hora es " + hora.value);
-    alert("El valor del carousel seleccionado es "+ carouselSeleccionado);
-  }
-});
+}
