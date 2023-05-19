@@ -35,6 +35,19 @@ module.exports = sequelize.authenticate()
         const middleware = require('./utils/middleware')
         const isAuthorized = require('./utils/isAuthorized')
 
+        let thisClient = await Client.findOne({ where: { id: config.CLIENT_ID } })
+        if (!thisClient) {
+            logger.info('Creating user authentication client')
+            thisClient = await Client.create({
+                id: config.CLIENT_ID,
+                name: 'Gestor de Laboratorios',
+                secret: config.CLIENT_SECRET,
+                redirectUri: 'http://localhost:3001/misTurnos.html',
+                grants: 'password',
+                scope: 'read write'
+            })
+        }
+
         if (config.NODE_ENV === 'development' && process.env.RESET_DEV_DATABASE === 'true') {
             logger.info('Resetting database')
             await sequelize.sync({ force: true })
@@ -60,14 +73,6 @@ module.exports = sequelize.authenticate()
                 role: 'developer'
             })
 
-            await Client.create({
-                id: config.CLIENT_ID,
-                name: 'Gestor de Laboratorios',
-                secret: config.CLIENT_SECRET,
-                redirectUri: 'http://localhost:3001/misTurnos.html',
-                grants: 'password',
-                scope: 'read write'
-            })
             await Client.create({
                 id: 'laboratorio.remoto',
                 name: 'Laboratorio remoto',
