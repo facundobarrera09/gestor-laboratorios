@@ -1,3 +1,5 @@
+/*global userData */
+
 const loginUrl = 'http://localhost:3001/'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
 const turnsApiUrl = 'http://localhost:3001/api/turns'

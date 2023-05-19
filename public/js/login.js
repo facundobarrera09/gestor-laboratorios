@@ -1,3 +1,5 @@
+/*global userData, notify*/
+
 const loginPostUrl = 'http://localhost:3001/api/login'
 const nextPageUrl = '/misTurnos.html'
 

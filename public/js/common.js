@@ -6,18 +6,19 @@ if (!userData && window.location.pathname !== '/') {
     window.location.replace('/')
 }
 
+// eslint-disable-next-line no-unused-vars
 const logout = () => {
     if (userData) {
         $.ajax({
             url: logoutUrl,
             headers: { 'Authorization': `Bearer ${userData.access_token}` },
             type: 'POST',
-            success: (response) => {
+            success: () => {
                 localStorage.removeItem('userLoginData')
                 sessionStorage.removeItem('userLoginData')
                 window.location.assign('/')
             },
-            error: (error) => {
+            error: () => {
                 localStorage.removeItem('userLoginData')
                 sessionStorage.removeItem('userLoginData')
                 window.location.assign('/')
@@ -27,10 +28,6 @@ const logout = () => {
     else {
         window.location.assign('/')
     }
-}
-
-const loadUserLoginData = () => {
-    return JSON.parse(localStorage.getItem('userLoginData'))
 }
 
 const generateAlert = (className, alertText) => {

@@ -1,3 +1,5 @@
+/*global userData, logout */
+
 const createTurnUrl = '/registrarTurno.html'
 const labRedirectUrl = '/redireccion.html'
 const laboratoriesGetUrl = 'http://localhost:3001/api/laboratories/active-inactive'
@@ -129,6 +131,7 @@ const deleteTurn = (turn) => {
     })
 }
 
+// eslint-disable-next-line no-unused-vars
 const cancelCurrentTurn = () => {
     if (currentTurn) {
         deleteTurn(currentTurn)
@@ -142,6 +145,7 @@ const cancelCurrentTurn = () => {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 const accessTurn = () => {
     const turn = currentTurn ? currentTurn : nextTurn
     if (turn) {
@@ -151,6 +155,7 @@ const accessTurn = () => {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 const createTurn = () => {
     window.location.assign(createTurnUrl)
 }
