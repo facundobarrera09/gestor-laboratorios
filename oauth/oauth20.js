@@ -1,4 +1,5 @@
 var oauth20 = require('./lib')
+const path = require('path')
 
 // Define methods
 module.exports = function(type) {
@@ -56,23 +57,25 @@ module.exports = function(type) {
 
     // Decision controller
     obj.decision = function(req, res, client, scope, user) {
-        req.oauth2.model.user.getId(user, (err, id) => {
-            var html = [
-                'Currently your are logged with id = ' + id,
-                'Client with id ' + id + ' asks for access',
-                'Scope asked ' + scope.join(),
-                '<form method="POST">',
-                '<input type="hidden" name="decision" value="1" />',
-                '<input type="submit" value="Authorize" />',
-                '</form>',
-                '<form method="POST">',
-                '<input type="hidden" name="decision" value="0" />',
-                '<input type="submit" value="Cancel" />',
-                '</form>'
-            ]
+        // req.oauth2.model.user.getId(user, (err, id) => {
+        //     var html = [
+        //         'Currently your are logged with id = ' + id,
+        //         'Client with id ' + id + ' asks for access',
+        //         'Scope asked ' + scope.join(),
+        //         '<form method="POST">',
+        //         '<input type="hidden" name="decision" value="1" />',
+        //         '<input type="submit" value="Authorize" />',
+        //         '</form>',
+        //         '<form method="POST">',
+        //         '<input type="hidden" name="decision" value="0" />',
+        //         '<input type="submit" value="Cancel" />',
+        //         '</form>'
+        //     ]
 
-            res.send(html.join('<br />'))
-        })
+        //     res.send(html.join('<br />'))
+        // })
+
+        res.sendFile(path.join(__dirname,'../public/authorization.html'))
     }
 
     return obj
