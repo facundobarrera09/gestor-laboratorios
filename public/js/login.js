@@ -32,6 +32,7 @@ form.onsubmit = (event) => {
                 window.location.replace(params.get('redirect') || nextPageUrl)
             },
             error: (response) => {
+                console.log(response.responseText.includes('password'))
                 if (response.responseText.includes('not found')) {
                     notify('error', 'El usuario no existe')
                 }

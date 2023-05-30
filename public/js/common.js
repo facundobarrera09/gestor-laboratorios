@@ -61,19 +61,24 @@ const createNotification = (type, message) => {
         console.log('notification field not defined')
     }
 }
-const notify = async () => {
-    const info = localStorage.getItem('notify')
-    const error = localStorage.getItem('error')
+const notify = async (type, message) => {
+    if (!(type && message)) {
+        const info = localStorage.getItem('notify')
+        const error = localStorage.getItem('error')
 
-    localStorage.removeItem('notify')
-    localStorage.removeItem('error')
+        localStorage.removeItem('notify')
+        localStorage.removeItem('error')
 
-    if (error) {
-        createNotification('error', error)
-        await new Promise(r => (setTimeout(r, 5000)))
+        if (error) {
+            createNotification('error', error)
+            await new Promise(r => (setTimeout(r, 5000)))
+        }
+        if (info) {
+            createNotification('info', info)
+        }
     }
-    if (info) {
-        createNotification('info', info)
+    else {
+        createNotification(type, message)
     }
 }
 
