@@ -12,18 +12,23 @@ const getTimeTurn = (turnDuration, hour) => {
 
 const checkTurnValidity = async (laboratoryId, date, number) => {
     const lab = await Laboratory.findOne({ where: { id: laboratoryId } })
-    const turnDuration = lab.turnDurationMinutes
+    console.log(lab)
+    if (lab) {
+        const turnDuration = lab.turnDurationMinutes
 
-    const today = new Date()
-    today.setHours(0,0,0,0)
+        const today = new Date()
+        today.setHours(0,0,0,0)
 
-    const now = new Date()
-    const hour = new Date(now.getTime() - today.getTime())
-    const currentTurn = getTimeTurn(turnDuration, hour)
+        const now = new Date()
+        const hour = new Date(now.getTime() - today.getTime())
+        const currentTurn = getTimeTurn(turnDuration, hour)
 
-    const allTurns = (24*60) / turnDuration
+        const allTurns = (24*60) / turnDuration
 
-    return (number < allTurns && number >= (today.getTime() === date.getTime() ? currentTurn : 0))
+        return (number < allTurns && number >= (today.getTime() === date.getTime() ? currentTurn : 0))
+    }
+    else
+        return false
 }
 
 const checkTurnAvailability = async (laboratoryId, date, turn) => {
