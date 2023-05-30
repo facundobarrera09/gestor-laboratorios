@@ -30,9 +30,9 @@ var contador = setInterval(async () => {
     const ahora = new Date()
     const distancia = fechaTurno.getTime() - ahora.getTime()
 
-    console.log(fechaTurno, ahora)
-    console.log(fechaTurno.getTime(), ahora.getTime())
-    console.log(distancia)
+    // console.log(fechaTurno, ahora)
+    // console.log(fechaTurno.getTime(), ahora.getTime())
+    // console.log(distancia)
     if (distancia > 0) {
         document.getElementById('reloj').innerText = new Date(distancia).toTimeString().slice(3,8)
     }
