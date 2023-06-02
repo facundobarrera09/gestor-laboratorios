@@ -18,14 +18,14 @@ module.exports = function(req, oauth2, client, sCode, redirectUri, pCb) {
         function(cb) {
             oauth2.model.code.fetchByCode(sCode, function(err, obj) {
                 if (err)
-                    cb(new error.serverError('Failed to call code::fetchByCode method'));
+                    return cb(new error.serverError('Failed to call code::fetchByCode method'));
                 else if (!obj)
-                    cb(new error.invalidGrant('Code not found'))
+                    return cb(new error.invalidGrant('Code not found'))
 
                 oauth2.model.code.getClientId(obj, function(err1, codeClientId) {
                     oauth2.model.client.getId(client, function(err1, clientId) {
                         if (codeClientId != clientId)
-                            cb(new error.invalidGrant('Code is issued by another client'));
+                            return cb(new error.invalidGrant('Code is issued by another client'));
 
                         oauth2.model.code.checkTTL(obj, function(err1, correctTtl) {
                             if (!correctTtl)
