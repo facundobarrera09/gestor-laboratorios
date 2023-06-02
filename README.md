@@ -41,6 +41,10 @@ DB_USER=[usuario de base de datos]
 DB_PASSWORD=[constraseña de usuario]
 
 SECRET=[string usada para la creación de tokens]
+SESSION_SECRET=[string usada para mantener las sesiones de usuarios]
+
+CLIENT_ID=[ID de cliente de autenticación de usuarios]
+CLIENT_SECRET=[Secreto de cliente de autenticación de usuarios]
 ```
 
 ## Run app (production)
