@@ -233,10 +233,11 @@ if (userData) {
             })
         },
         error: (response) => {
+            console.log(response)
             if (response.responseText.includes('not found')) {
                 localStorage.setItem('error', 'El servidor cerró la sesión')
             }
-            else if (response.data.includes('expired')) {
+            else if (response.responseText.includes('expired')) {
                 localStorage.setItem('error', 'La sesión a expirado')
             }
             else {
