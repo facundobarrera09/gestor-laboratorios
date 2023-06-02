@@ -102,17 +102,12 @@ npm run test
   >
   > **Request**  
   > ```js
-  > {
-  >   username: string,
-  >   password: string
-  > }
+  > {}
   > ```
   > **Response** 
   > ```js
   > {
-  >   username: string,
-  >   role: string,
-  >   token: string
+  >   message: string
   > }
   > ```
   > ***
@@ -127,7 +122,11 @@ npm run test
   > 
   > **Request**  
   > ```js
-  > {}
+  > {
+  >   username: string,
+  >   password: string,
+  >   role: string ('default', 'administrator', 'developer') 
+  > }
   > ```
   > **Response**  
   > ```js
@@ -148,9 +147,11 @@ npm run test
   > **Request**  
   > ```js
   > {
-  >   username: string,
-  >   password: string,
-  >   role: string
+  >   name: string,
+  >   turnDurationMinutes: int,
+  >   ip: string,
+  >   port: string,
+  >   status: string ('active', 'inactive', 'approval_pending')
   > }
   > ```
   > **Response**  
@@ -163,7 +164,7 @@ npm run test
   > Obtener información del laboratorio asociado al token del solicitante
   > 
   > **Formato**  
-  > GET - /api/laboratories/ - Content-Type: application/json - Authorization: Bearer (token)
+  > GET - /api/laboratories - Content-Type: application/json - Authorization: Bearer (token)
   > 
   > **Request**  
   > ```js
