@@ -88,6 +88,31 @@ npm run test
   > ```
   > ***
 
+### Logout
+  
+  > **Descripción**  
+  > Avisar al sistema de que el usuario esta cerrando sesión
+  >
+  > **Formato**  
+  > POST - /api/logout - Authorization: Bearer (token)
+  >
+  > **Request**  
+  > ```js
+  > {
+  >   username: string,
+  >   password: string
+  > }
+  > ```
+  > **Response** 
+  > ```js
+  > {
+  >   username: string,
+  >   role: string,
+  >   token: string
+  > }
+  > ```
+  > ***
+
 ### Users
   
   > **Descripción**  
@@ -98,18 +123,12 @@ npm run test
   > 
   > **Request**  
   > ```js
-  > {
-  >   username: string,
-  >   password: string,
-  >   role: string
-  > }
+  > {}
   > ```
   > **Response**  
   > ```js
   > {
-  >   username: string,
-  >   password: string,
-  >   role: string
+  >   message: string
   > }
   > ```
   > ***
@@ -137,6 +156,29 @@ npm run test
   > ***
   
   > **Descripción**  
+  > Obtener información del laboratorio asociado al token del solicitante
+  > 
+  > **Formato**  
+  > GET - /api/laboratories/ - Content-Type: application/json - Authorization: Bearer (token)
+  > 
+  > **Request**  
+  > ```js
+  > {}
+  > ```
+  > **Response**  
+  > ```js
+  > {
+  >   id: integer,
+  >   name: string,
+  >   turnDurationMinutes: integer,
+  >   ip: string,
+  >   port: string,
+  >   state: string (active, inactive, approval_pending)
+  > }
+  > ```
+  > ***
+  
+  > **Descripción**  
   > Obtener información de los laboratorios disponibles según su estado (activos, inactivos, o pendientes de aprovación)
   > 
   > **Formato**  
@@ -153,8 +195,6 @@ npm run test
   >   id: integer,
   >   name: string,
   >   turnDurationMinutes: integer,
-  >   ip: string,
-  >   port: string,
   >   state: string (active, inactive, approval_pending)
   > }, ...]
   > ```
@@ -207,33 +247,15 @@ npm run test
   > ***
 
   > **Descripción**
-  > Obtener los turnos disponibles de un laboratorio en un día determinado
+  > Obtener los turnos disponibles asociados a un usuario
   > 
   > **Nota**
-  > Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  > 1. Si el que solicita es un usuario, se devuelven todos los turnos del mismo.
+  > 2. Si el que solicita es un laboratorio, se devuelven todos los turnos del usuario asociado al token de acceso que este utilizando el laboratorio
+  > 3. Si se especifica una fecha, se devuelven todos los turnos correspondientes al usuario en esa fecha
   > 
   > **Formato**
-  > GET - /api/turns/available/:labId?date=DD-MM-AAAA - Content-Type: application/json - Authorization: Bearer (token)
-  > 
-  > **Request**
-  > ```js
-  > {}
-  > ```
-  > **Response**
-  > ```js
-  > [integer, ...]
-  > ```
-  > ***
-  
-  > **Descripción**
-  > Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
-  > 
-  > **Nota**
-  > 1. Si el usuario es administrador, se devuelven todos los turnos del día presentes en la base de datos  
-  > 2. Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
-  > 
-  > **Formato**
-  > GET - /api/turns/detailed/:labId - Content-Type: application/json - Authorization: Bearer (token)
+  > GET - /api/turns/?date=AAAA-MM-DD - Content-Type: application/json - Authorization: Bearer (token)
   > 
   > **Request**
   > ```js
@@ -249,6 +271,77 @@ npm run test
   >   creatingUserId: integer,
   >   laboratoryId: integer
   > }, ...]
+  > ```
+  > ***
+  
+  > **Descripción**
+  > Obtener los turnos disponibles de un laboratorio en un día determinado
+  > 
+  > **Nota**
+  > Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  > 
+  > **Formato**
+  > GET - /api/turns/available/:labId?date=AAAA-MM-DD - Content-Type: application/json - Authorization: Bearer (token)
+  > 
+  > **Request**
+  > ```js
+  > {}
+  > ```
+  > **Response**
+  > ```js
+  > {
+  >   laboratoryId: integer,
+  >   date: Date,
+  >   availableTurns: [integer, ...]
+  > }
+  > ```
+  > ***
+  
+  > **Descripción**
+  > Obtener información detallada de los turnos de un día determinado del usuario al que le correspone el TOKEN 
+  > 
+  > **Nota**
+  > 1. Si el usuario es administrador, se devuelven todos los turnos del día presentes en la base de datos  
+  > 2. Si no se especifica el parametro 'date', se considera que el turno pertenece al día actual
+  > 
+  > **Formato**
+  > GET - /api/turns/detailed/:labId?date=AAAA-MM-DD - Content-Type: application/json - Authorization: Bearer (token)
+  > 
+  > **Request**
+  > ```js
+  > {}
+  > ```
+  > **Response**
+  > ```js
+  > [{
+  >   id: integer,
+  >   date: string (objeto Date en formato string),
+  >   turn: integer,
+  >   accessingUserId: integer,
+  >   creatingUserId: integer,
+  >   laboratoryId: integer
+  > }, ...]
+  > ```
+  > ***
+  
+  > **Descripción**
+  > Eliminar un turno
+  > 
+  > **Nota**
+  > 1. El usuario debe ser el mismo que creo el turno para poder eliminarlo
+  > 
+  > **Formato**
+  > GET - /api/turns/?date=AAAA-MM-DD - Content-Type: application/json - Authorization: Bearer (token)
+  > 
+  > **Request**
+  > ```js
+  > {
+  >   turnId: integer
+  > }
+  > ```
+  > **Response**
+  > ```js
+  > {}
   > ```
   > ***
 
