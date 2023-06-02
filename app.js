@@ -35,19 +35,6 @@ module.exports = sequelize.authenticate()
         const middleware = require('./utils/middleware')
         const isAuthorized = require('./utils/isAuthorized')
 
-        let thisClient = await Client.findOne({ where: { id: config.CLIENT_ID } })
-        if (!thisClient) {
-            logger.info('Creating user authentication client')
-            thisClient = await Client.create({
-                id: config.CLIENT_ID,
-                name: 'Gestor de Laboratorios',
-                secret: config.CLIENT_SECRET,
-                redirectUri: 'http://localhost:3001/misTurnos.html',
-                grants: 'password',
-                scope: 'read write'
-            })
-        }
-
         if (config.NODE_ENV === 'development' && process.env.RESET_DEV_DATABASE === 'true') {
             logger.info('Resetting database')
             await sequelize.sync({ force: true })
@@ -56,6 +43,11 @@ module.exports = sequelize.authenticate()
                 username: 'facundo',
                 passwordHash: await bcrypt.hash('password', 10),
                 role: 'administrator'
+            })
+            await User.create({
+                username: 'aybar',
+                passwordHash: await bcrypt.hash('contraseña', 10),
+                role: 'default'
             })
             await User.create({
                 username: 'james',
@@ -77,13 +69,13 @@ module.exports = sequelize.authenticate()
                 id: 'laboratorio.remoto',
                 name: 'Laboratorio remoto',
                 secret: 'secreto',
-                redirectUri: 'http://127.0.0.1:3000',
+                redirectUri: 'http://127.0.0.1:3000/main.html',
                 grants: 'authorization_code',
                 scope: 'read'
             })
 
             await Laboratory.create({
-                name: 'Laboratory of geosphere',
+                name: 'Laboratorio de fisica',
                 turnDurationMinutes: 10,
                 ip: '127.0.0.1',
                 port: '3000',
@@ -91,7 +83,7 @@ module.exports = sequelize.authenticate()
                 clientId: 'laboratorio.remoto'
             })
             await Laboratory.create({
-                name: 'Laboratory of physics',
+                name: 'Laboratorio de geosfera',
                 turnDurationMinutes: 10,
                 ip: '192.168.100.21',
                 port: '3000',
@@ -161,6 +153,19 @@ module.exports = sequelize.authenticate()
                 accessingUserId: 1,
                 creatingUserId: 1,
                 laboratoryId: 2
+            })
+        }
+
+        let thisClient = await Client.findOne({ where: { id: config.CLIENT_ID } })
+        if (!thisClient) {
+            logger.info('Creating user authentication client')
+            thisClient = await Client.create({
+                id: config.CLIENT_ID,
+                name: 'Gestor de Laboratorios',
+                secret: config.CLIENT_SECRET,
+                redirectUri: 'http://localhost:3001/misTurnos.html',
+                grants: 'password',
+                scope: 'read write'
             })
         }
 
