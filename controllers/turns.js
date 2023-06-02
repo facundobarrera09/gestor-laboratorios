@@ -159,7 +159,9 @@ turnsRouter.get('/', async (request, response) => {
         reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where })
     }
     else {
+        const user = await User.findOne({ where: { id: request.oauth2.accessToken.userId } })
         const lab = await Laboratory.findOne({ where: { clientId: request.oauth2.accessToken.clientId } })
+        where.accessingUserId = user.id
         where.laboratoryId = lab.id
         reservedTurns = await Turn.findAll({ attributes: ['id', 'date', 'turn', 'accessingUserId', 'creatingUserId', 'laboratoryId'], where })
     }
