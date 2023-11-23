@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      password_change.belongsTo( models.User, {
+        foreignKey: 'id',
+        targetKey: 'userId'
+      })
     }
   }
   password_change.init({
