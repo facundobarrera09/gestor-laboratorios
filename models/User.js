@@ -9,8 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate(models) { // eslint-disable-line no-unused-vars
       // define association here
+      User.belongsTo(models.User_states, {
+        foreignKey: 'status', // Esto debería ser la clave externa en el modelo User
+        targetKey: 'id', // Esto debería ser la clave objetivo en el modelo User_states
+      });
     }
   }
   User.init({

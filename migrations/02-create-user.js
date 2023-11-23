@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('User', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -24,6 +24,12 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'User_states',
+          key: 'id' // Debería ser 'id' en lugar de 'status'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       passwordHash: {
         type: Sequelize.STRING,
@@ -52,6 +58,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('User');
   }
 };
