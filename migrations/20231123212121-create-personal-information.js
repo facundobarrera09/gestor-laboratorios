@@ -2,43 +2,50 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('User', {
+    await queryInterface.createTable('Personal_information', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
-        type: Sequelize.STRING(25),
-        allowNull: false,
+      id: {
+        type: Sequelize.INTEGER
       },
-      email: {
-        type: Sequelize.STRING(25),
-        allowNull: false,
+      lastName: {
+        type: Sequelize.STRING
       },
-      verified: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
+      firstName: {
+        type: Sequelize.STRING
       },
-      status: {
+      phoneNumber: {
+        type: Sequelize.INTEGER
+      },
+      documentType: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        references: {
+          model: 'Document_type',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
-      passwordHash: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      documentNumber: {
+        type: Sequelize.STRING
       },
-      deletedAt: {
+      ownedBy: {
+        type: Sequelize.INTEGER
+      },
+      createdAt: {
+        type: Sequelize.DATE
+      },
+      updatedAt: {
         type: Sequelize.DATE
       },
       createdBy: {
         type: Sequelize.INTEGER
       },
       updatedBy: {
-        type: Sequelize.INTEGER
-      },
-      deletedBy: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -52,6 +59,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('User');
+    await queryInterface.dropTable('Personal_information');
   }
 };
